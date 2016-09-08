@@ -10,6 +10,7 @@
   },
   "files": [
         "loader.ts",
+        "plugin.ts",
         "typings.d.ts"
   ]
 }

@@ -1,10 +1,16 @@
 // Copyright (c) Jupyter Development Team.
 // Distributed under the terms of the Modified BSD License.
 
-var webpack = require('webpack');
-var Config = require('webpack-config').Config;
-var JupyterLabPlugin = require('./plugin');
-var fs = require('fs-extra');
+import * as webpack
+  from 'webpack';
+
+import {
+  Config
+} from 'webpack-config';
+
+import {
+  JupyterLabPlugin
+} from './plugin';
 
 
 /**
@@ -20,17 +26,18 @@ var fs = require('fs-extra');
  * The loading of all CSS files is handled by the extension builder, and cannot
  * be overriden using this function.
  */
-function buildExtension(name, entryPath, extras) {
+export
+function buildExtension(options: IBuildOptions) {
   try {
     require.resolve(entryPath);
   } catch (e) {
     console.error('Cannot resolve entry path:', entryPath);
     return;
   }
-  var entry = {};
+  let entry = {};
   entry[name] = entryPath;
 
-  var config = new Config().merge({ entry: entry }).merge({
+  let config = new Config().merge({ entry: entry }).merge({
     output: {
       path: __dirname + '/build',
       filename: '[name].bundle.js',
@@ -49,7 +56,7 @@ function buildExtension(name, entryPath, extras) {
     plugins: [new JupyterLabPlugin()]
   }).merge(extras || {});
 
-  var compiler = webpack(config);
+  let compiler = webpack(config);
   compiler.context = name;
   compiler.run(function(err, stats) {
     if (err) {
@@ -60,11 +67,8 @@ function buildExtension(name, entryPath, extras) {
         chunks: true,
         modules: false,
         chunkModules: false,
-        colors: require("supports-color")
-      }) + "\n");
+        colors: require('supports-color')
+      }) + '\n');
     }
   });
 }
-
-
-module.exports = buildExtension;

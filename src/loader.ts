@@ -128,7 +128,8 @@ class ModuleLoader {
       if (!target) {
         continue;
       }
-      if (source.package === target.package && source.module === target.module) {
+      if (source.package === target.package &&
+          source.module === target.module) {
         matches.push(mod);
         versions.push(target.version);
       }
