@@ -7,7 +7,10 @@ import {
 
 
 /**
- * A module loader using semver for deduplication of modules.
+ * A module loader using semver for dynamic resolution of requires.
+ *
+ * It is meant to be used in conjunction with the JuptyerLabPlugin
+ * for WebPack.
  */
 export
 class ModuleLoader {
@@ -15,9 +18,10 @@ class ModuleLoader {
    * Construct a new module loader.
    */
   constructor() {
-    // Add the ensure function to the require module for internal use within
-    // the modules.
-    (this.require as any).e = this.ensureBundle.bind(this);
+    // Provide the `require.ensure` function used for code
+    // splitting in the WebPack bundles.
+    // https://webpack.github.io/docs/code-splitting.html
+    (this.require as any).ensure = this.ensureBundle.bind(this);
   }
 
   /**
@@ -27,8 +31,11 @@ class ModuleLoader {
    *   For example, "foo@1.0.1/lib/bar/baz.js".
    *
    * @param callback - The callback function for invoking the module.
+   *
+   * #### Notes
+   * The callback is called with the module,
    */
-  define(path: string, callback: () => void): void {
+  define(path: string, callback: ModuleLoader.DefineCallback): void {
     if (!(path in this._registered)) {
       this._registered[path] = callback;
     }
@@ -46,7 +53,7 @@ class ModuleLoader {
    */
   require(path: string): any {
     // Check if module is in cache.
-    let id = this._findModuleId(path);
+    let id = this._findMatch(path);
     let installed = this._modules;
     if (installed[id]) {
       return installed[id].exports;
@@ -77,9 +84,8 @@ class ModuleLoader {
    *
    * @param callback - The callback invoked when the bundle has loaded.
    */
-  ensureBundle(path: string, callback?: any): Promise<void> {
-    let bundles = this._bundles;
-    let bundle = bundles[path] || this._createBundle(path);
+  ensureBundle(path: string, callback?: ModuleLoader.EnsureCallback): Promise<void> {
+    let bundle = this._getBundle(path);
 
     if (bundle.loaded) {
       if (callback) {
@@ -95,7 +101,7 @@ class ModuleLoader {
   }
 
   /**
-   * Find a module matching a given module request.
+   * Find a module path matching a given module request.
    *
    * @param path - The semver-mangled fully qualified path to the module.
    *   For example, "foo@^1.1.0/lib/bar/baz.js".
@@ -104,9 +110,9 @@ class ModuleLoader {
    *   the registered path that maximally satisfies the semver range of the
    *   request.
    */
-  private _findModuleId(path: string): string {
-    // Use the cached id if available.
-    let cache = this._lookupCache;
+  private _findMatch(path: string): string {
+    // Use the cached match if available.
+    let cache = this._matches;
     if (cache[path]) {
       return cache[path];
     }
@@ -144,9 +150,13 @@ class ModuleLoader {
   }
 
   /**
-   * Create a bundle record for a path.
+   * Get or create a bundle record for a path.
    */
-  private _createBundle(path: string): Private.IBundle {
+  private _getBundle(path: string): Private.IBundle {
+    let bundle = this._bundles[path];
+    if (bundle) {
+      return bundle;
+    }
     // Start bundle loading.
     let head = document.getElementsByTagName('head')[0];
     let script = document.createElement('script');
@@ -155,11 +165,10 @@ class ModuleLoader {
     script.async = true;
     let promise = new Promise<void>((resolve, reject) => {
       script.onload = () => {
-        let record = this._bundles[path];
-        while (record.callbacks.length) {
-          record.callbacks.shift().call(null, this.require);
+        while (bundle.callbacks.length) {
+          bundle.callbacks.shift().call(null, this.require.bind(this));
         }
-        record.loaded = true;
+        bundle.loaded = true;
         resolve(void 0);
       };
       script.onerror = err => {
@@ -168,7 +177,7 @@ class ModuleLoader {
     });
     head.appendChild(script);
     script.src = path;
-    let bundle: Private.IBundle = this._bundles[path] = {
+    bundle = this._bundles[path] = {
       loaded: false,
       callbacks: [],
       promise
@@ -201,11 +210,39 @@ class ModuleLoader {
     return cache[path];
   }
 
-  private _registered: { [key: string]: () => void } = Object.create(null);
+  private _registered: { [key: string]: ModuleLoader.DefineCallback } = Object.create(null);
   private _parsed: { [key: string]: Private.IPathInfo } = Object.create(null);
   private _modules: { [key: string]: Private.IModule } = Object.create(null);
   private _bundles: { [key: string]: Private.IBundle } = Object.create(null);
-  private _lookupCache: { [key: string]: string } = Object.create(null);
+  private _matches: { [key: string]: string } = Object.create(null);
+}
+
+
+/**
+ * A namespace for `ModuleLoader` statics.
+ */
+export
+namespace ModuleLoader {
+  /**
+   * A function that synchronously returns a module.
+   */
+  export
+  type RequireFunc = (path: string) => any;
+
+
+  /**
+   * A callback for a define function that takes a module, its exports,
+   * and a require function.
+   */
+  export
+  type DefineCallback = (module: any, exports: any, require: RequireFunc) => void;
+
+
+  /**
+   * A callback for an ensure function that takes a require function.
+   */
+  export
+  type EnsureCallback = (require: RequireFunc) => void;
 }
 
 
@@ -247,7 +284,7 @@ namespace Private {
     /**
      * The callbacks associated with the bundle.
      */
-    callbacks: (() => void)[];
+    callbacks: ModuleLoader.EnsureCallback[];
 
     /**
      * A promise fullfiled when the bundle has loaded.
