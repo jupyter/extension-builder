@@ -428,7 +428,7 @@ namespace Private {
       };
       webpackContext.resolve = webpackContextResolve;
       module.exports = webpackContext;
-      webpackContext.id = ${id}
+      webpackContext.id = ${id};
     `;
   }
 }

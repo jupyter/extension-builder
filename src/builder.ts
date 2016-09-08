@@ -5,12 +5,19 @@ import * as webpack
   from 'webpack';
 
 import {
-  Config
-} from 'webpack-config';
-
-import {
   JupyterLabPlugin
 } from './plugin';
+
+
+// Stubs for "webpack-config" and "webpack-extract-text-plugin".
+declare var Config: any;
+declare var ExtractTextPlugin: any;
+
+
+// Stubs for node.
+declare var require: any;
+declare var process: any;
+declare var __dirname: string;
 
 
 /**
@@ -29,13 +36,13 @@ import {
 export
 function buildExtension(options: IBuildOptions) {
   try {
-    require.resolve(entryPath);
+    require.resolve(options.entryPath);
   } catch (e) {
-    console.error('Cannot resolve entry path:', entryPath);
+    console.error('Cannot resolve entry path:', options.entryPath);
     return;
   }
-  let entry = {};
-  entry[name] = entryPath;
+  let entry: { [key: string]: string } = {};
+  entry[options.name] = options.entryPath;
 
   let config = new Config().merge({ entry: entry }).merge({
     output: {
@@ -48,13 +55,20 @@ function buildExtension(options: IBuildOptions) {
     },
     debug: true,
     bail: true,
-    module: {
-      loaders: [
-        { test: /\.css$/, loader: JupyterLabPlugin.cssLoader },
-      ]
-    },
     plugins: [new JupyterLabPlugin()]
-  }).merge(extras || {});
+  }).merge(options.config || {});
+
+  // Add the CSS extractors unless explicitly told otherwise.
+  if (options.extractCSS !== false) {
+    let loader: any = ExtractTextPlugin('style-loader', 'css-loader',
+      { publicPath: './' });
+    config.merge({
+      module: {
+        loaders: [{ test: /\.css$/, loader: loader }]
+      },
+      plugins: [new ExtractTextPlugin()]
+    });
+  }
 
   let compiler = webpack(config);
   compiler.context = name;
@@ -71,4 +85,33 @@ function buildExtension(options: IBuildOptions) {
       }) + '\n');
     }
   });
+}
+
+
+/**
+ * The options used to build a JupyterLab extension.
+ */
+export
+interface IBuildOptions {
+  /**
+   * The name of the extension.
+   */
+  name: string;
+
+  /**
+   * The path to the entry point.
+   */
+  entryPath: string;
+
+  /**
+   * Whether to extract CSS from the bundles (default is True).
+   *
+   * Note: no other CSS loaders should be used if set to True.
+   */
+  extractCSS?: boolean;
+
+  /**
+   * Extra webpack configuration.
+   */
+  config?: webpack.Configuration;
 }

@@ -463,6 +463,7 @@ declare module "webpack" {
                 outputFileSystem: any;
                 name: string;
                 options: Configuration;
+                context: string;
             }
 
             interface Watching {
