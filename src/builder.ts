@@ -4,6 +4,12 @@
 import * as ExtractTextPlugin
   from 'extract-text-webpack-plugin';
 
+import * as fs
+  from 'fs';
+
+import * as path
+  from 'path';
+
 import * as webpack
   from 'webpack';
 
@@ -19,23 +25,31 @@ import {
 /**
  * Build a JupyterLab extension.
  *
- * @param name - The name of the extension.
- *
- * @param entryPath - The path to the entry point file.
- *
- * @param extras - Optional WebPack config to be merged with the defaults.
- *
- * #### Notes
- * The loading of all CSS files is handled by the extension builder, and cannot
- * be overriden using this function.
+ * @param options - The options used to build the extension.
  */
 export
 function buildExtension(options: IBuildOptions) {
   let name = options.name;
+  let entryPath = options.entryPath;
+
+  if (!name) {
+    throw Error('Must specify a name for the extension');
+  }
+  if (!entryPath) {
+    throw Error('Must specify an entryPath');
+  }
+  try {
+    fs.statSync(path.join(process.cwd(), entryPath));
+  } catch (e) {
+    throw Error('Invalid path to entry point: ' + entryPath);
+  }
+
+  // Create the named entry point to the entryPath.
   let entry: { [key: string]: string } = {};
   entry[name] = options.entryPath;
 
   let config = new Config().merge({ entry: entry }).merge({
+    // The default options.
     output: {
       path: process.cwd() + '/build',
       filename: '[name].bundle.js',
@@ -47,6 +61,7 @@ function buildExtension(options: IBuildOptions) {
     debug: true,
     bail: true,
     plugins: [new JupyterLabPlugin()]
+  // Add the override options.
   }).merge(options.config || {});
 
   // Add the CSS extractors unless explicitly told otherwise.
@@ -61,6 +76,7 @@ function buildExtension(options: IBuildOptions) {
     });
   }
 
+  // Set up and run the WebPack compilation.
   let compiler = webpack(config);
   compiler.context = name;
   compiler.run(function(err, stats) {
