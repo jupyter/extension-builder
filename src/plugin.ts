@@ -207,7 +207,7 @@ class JupyterLabPlugin {
           fileName = chunk.files[0];
         }
       });
-      let replacement = ('__webpack_require__.e(\'' + publicPath +
+      let replacement = ('__webpack_require__.ensure(\'' + publicPath +
               fileName + '\'');
       source = source.replace(regex, replacement);
     }
