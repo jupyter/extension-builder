@@ -82,6 +82,10 @@ function buildExtension(options: IBuildOptions) {
 
   // Add the CSS extractors unless explicitly told otherwise.
   if (options.extractCSS !== false) {
+    // Note that we have to use an explicit local public path
+    // otherwise the urls in the extracted CSS will point to the wrong
+    // location.
+    // See https://github.com/webpack/extract-text-webpack-plugin/issues/27#issuecomment-77531770
     let loader: any = ExtractTextPlugin.extract('style-loader', 'css-loader',
       { publicPath: './' });
     config.merge({
