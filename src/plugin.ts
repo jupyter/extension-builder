@@ -104,12 +104,14 @@ class JupyterLabPlugin {
       manifest['files'] = chunk.files;
       manifest['modules'] = modules;
 
+      let manifestSource = JSON.stringify(manifest, null, '\t');
+
       compilation.assets[fileName + '.manifest'] = {
-        source: function() {
-          return JSON.stringify(manifest);
+        source: () => {
+          return manifestSource;
         },
-        size: function() {
-          return JSON.stringify(manifest).length;
+        size: () => {
+          return manifestSource.length;
         }
       };
 

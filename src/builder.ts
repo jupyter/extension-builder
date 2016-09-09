@@ -70,7 +70,7 @@ function buildExtension(options: IBuildOptions) {
     output: {
       path: path.join(process.cwd(), 'build'),
       filename: '[name].bundle.js',
-      publicPath: 'labextension/[name]'
+      publicPath: 'labextension/' + name
     },
     node: {
       fs: 'empty'
