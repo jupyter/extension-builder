@@ -1,6 +1,6 @@
 {
   "name": "jupyterlab-extension-builder",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Tools for building JupyterLab extensions",
   "main": "lib/index.js",
   "files": [
