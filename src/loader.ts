@@ -228,25 +228,17 @@ class ModuleLoader {
 export
 namespace ModuleLoader {
   /**
-   * A function that synchronously returns a module.
-   */
-  export
-  type RequireFunc = (path: string) => any;
-
-
-  /**
    * A callback for a define function that takes a module, its exports,
    * and a require function.
    */
   export
-  type DefineCallback = (module: any, exports: any, require: RequireFunc) => void;
-
+  type DefineCallback = (module: any, exports: any, require: NodeRequire) => void;
 
   /**
    * A callback for an ensure function that takes a require function.
    */
   export
-  type EnsureCallback = (require: RequireFunc) => void;
+  type EnsureCallback = (require: NodeRequire) => void;
 }
 
 
