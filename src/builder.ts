@@ -64,8 +64,9 @@ function buildExtension(options: IBuildOptions) {
   let entry: { [key: string]: string } = {};
   entry[name] = options.entryPath;
 
-  let config = new Config().merge({ entry: entry }).merge({
+  let config = new Config().merge({
     // The default options.
+    entry: entry,
     output: {
       path: process.cwd() + '/build',
       filename: '[name].bundle.js',
