@@ -37,7 +37,7 @@ function buildExtension(options: IBuildOptions) {
 
   let config = new Config().merge({ entry: entry }).merge({
     output: {
-      path: __dirname + '/build',
+      path: process.cwd() + '/build',
       filename: '[name].bundle.js',
       publicPath: 'labextension/[name]'
     },
