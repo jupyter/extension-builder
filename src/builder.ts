@@ -31,12 +31,6 @@ import {
  */
 export
 function buildExtension(options: IBuildOptions) {
-  // try {
-  //   require.resolve(options.entryPath);
-  // } catch (e) {
-  //   console.error('Cannot resolve entry path:', options.entryPath);
-  //   return;
-  // }
   let name = options.name;
   let entry: { [key: string]: string } = {};
   entry[name] = options.entryPath;
