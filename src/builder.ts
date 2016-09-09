@@ -142,14 +142,14 @@ interface IBuildOptions {
   /**
    * Whether to extract CSS from the bundles (default is True).
    *
-   * Note: no other CSS loaders should be used if set to True.
+   * Note: no other CSS loaders should be used if not set to False.
    */
   extractCSS?: boolean;
 
   /**
-   * Whether to use the default loaders for other file types.
+   * Whether to use the default loaders for some common file types.
    *
-   * The default is true.
+   * See [[DEFAULT_LOADERS]].  The default is True.
    */
   useDefaultLoaders?: boolean;
 
