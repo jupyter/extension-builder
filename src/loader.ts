@@ -68,7 +68,9 @@ class ModuleLoader {
 
     // Execute the module function.
     let callback = this._registered[id];
-    callback.call(mod.exports, mod, mod.exports, this.require.bind(this));
+    let func = this.require.bind(this);
+    func.ensure = this.ensureBundle.bind(this);
+    callback.call(mod.exports, mod, mod.exports, func);
 
     // Flag the module as loaded.
     mod.loaded = true;
