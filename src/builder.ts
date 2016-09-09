@@ -112,7 +112,7 @@ function buildExtension(options: IBuildOptions) {
     if (err) {
       console.error(err.message);
     } else {
-      console.log('\n\nSuccess fully built "' + name + '":\n');
+      console.log('\n\nSuccessfully built "' + name + '":\n');
       process.stdout.write(stats.toString({
         chunks: true,
         modules: false,
