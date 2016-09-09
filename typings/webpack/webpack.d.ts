@@ -464,6 +464,8 @@ declare module "webpack" {
                 name: string;
                 options: Configuration;
                 context: string;
+                /** Add a plugin */
+                plugin(name: string, handler: CompilerCallback): void;
             }
 
             interface Watching {

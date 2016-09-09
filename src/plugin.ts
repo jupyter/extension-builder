@@ -4,10 +4,8 @@
 import * as path
   from 'path';
 
-
-// Stubs for node constructs
-declare var require: any;
-declare var process: any;
+import * as webpack
+  from 'webpack';
 
 
 /**
@@ -29,12 +27,12 @@ class JupyterLabPlugin {
    *
    * @param compiler - The WebPack compiler object.
    */
-  apply(compiler: any) {
+  apply(compiler: webpack.compiler.Compiler) {
     let publicPath = compiler.options.output.publicPath;
     if (!publicPath) {
       throw new Error('Must define a public path');
     }
-    if (!publicPath.endsWith('/')) {
+    if (publicPath[publicPath.length - 1] !== '/') {
       publicPath += '/';
     }
     this._publicPath = publicPath;
@@ -47,7 +45,7 @@ class JupyterLabPlugin {
     compiler.plugin('emit', this._onEmit.bind(this));
   }
 
-  private _onEmit(compilation: any, callback: any): void {
+  private _onEmit(compilation: any, callback: () => void): void {
 
     // Explore each chunk (build output):
     compilation.chunks.forEach((chunk: any) => {

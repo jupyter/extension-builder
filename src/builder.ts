@@ -14,12 +14,6 @@ declare var Config: any;
 declare var ExtractTextPlugin: any;
 
 
-// Stubs for node.
-declare var require: any;
-declare var process: any;
-declare var __dirname: string;
-
-
 /**
  * Build a JupyterLab extension.
  *
