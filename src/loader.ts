@@ -22,6 +22,8 @@ class ModuleLoader {
     // splitting in the WebPack bundles.
     // https://webpack.github.io/docs/code-splitting.html
     (this.require as any).ensure = this.ensureBundle.bind(this);
+    this._boundRequire = this.require.bind(this);
+    this._boundRequire.ensure = this.ensureBundle.bind(this);
   }
 
   /**
@@ -68,9 +70,7 @@ class ModuleLoader {
 
     // Execute the module function.
     let callback = this._registered[id];
-    let func = this.require.bind(this);
-    func.ensure = this.ensureBundle.bind(this);
-    callback.call(mod.exports, mod, mod.exports, func);
+    callback.call(mod.exports, mod, mod.exports, this._boundRequire);
 
     // Flag the module as loaded.
     mod.loaded = true;
@@ -218,6 +218,7 @@ class ModuleLoader {
   private _modules: { [key: string]: Private.IModule } = Object.create(null);
   private _bundles: { [key: string]: Private.IBundle } = Object.create(null);
   private _matches: { [key: string]: string } = Object.create(null);
+  private _boundRequire: any;
 }
 
 
