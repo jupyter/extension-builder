@@ -1,17 +1,19 @@
 // Copyright (c) Jupyter Development Team.
 // Distributed under the terms of the Modified BSD License.
 
+import * as ExtractTextPlugin
+  from 'extract-text-webpack-plugin';
+
 import * as webpack
   from 'webpack';
 
 import {
+  Config
+} from 'webpack-config';
+
+import {
   JupyterLabPlugin
 } from './plugin';
-
-
-// Stubs for "webpack-config" and "webpack-extract-text-plugin".
-declare var Config: any;
-declare var ExtractTextPlugin: any;
 
 
 /**
@@ -29,14 +31,15 @@ declare var ExtractTextPlugin: any;
  */
 export
 function buildExtension(options: IBuildOptions) {
-  try {
-    require.resolve(options.entryPath);
-  } catch (e) {
-    console.error('Cannot resolve entry path:', options.entryPath);
-    return;
-  }
+  // try {
+  //   require.resolve(options.entryPath);
+  // } catch (e) {
+  //   console.error('Cannot resolve entry path:', options.entryPath);
+  //   return;
+  // }
+  let name = options.name;
   let entry: { [key: string]: string } = {};
-  entry[options.name] = options.entryPath;
+  entry[name] = options.entryPath;
 
   let config = new Config().merge({ entry: entry }).merge({
     output: {
@@ -54,13 +57,13 @@ function buildExtension(options: IBuildOptions) {
 
   // Add the CSS extractors unless explicitly told otherwise.
   if (options.extractCSS !== false) {
-    let loader: any = ExtractTextPlugin('style-loader', 'css-loader',
+    let loader: any = ExtractTextPlugin.extract('style-loader', 'css-loader',
       { publicPath: './' });
     config.merge({
       module: {
         loaders: [{ test: /\.css$/, loader: loader }]
       },
-      plugins: [new ExtractTextPlugin()]
+      plugins: [new ExtractTextPlugin('[name].css')]
     });
   }
 
