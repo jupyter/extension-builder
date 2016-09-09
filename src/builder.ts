@@ -68,7 +68,7 @@ function buildExtension(options: IBuildOptions) {
     // The default options.
     entry: entry,
     output: {
-      path: process.cwd() + '/build',
+      path: path.join(process.cwd(), 'build'),
       filename: '[name].bundle.js',
       publicPath: 'labextension/[name]'
     },
@@ -87,7 +87,7 @@ function buildExtension(options: IBuildOptions) {
     // otherwise the urls in the extracted CSS will point to the wrong
     // location.
     // See https://github.com/webpack/extract-text-webpack-plugin/issues/27#issuecomment-77531770
-    let loader: any = ExtractTextPlugin.extract('style-loader', 'css-loader',
+    let loader = ExtractTextPlugin.extract('style-loader', 'css-loader',
       { publicPath: './' });
     config.merge({
       module: {
@@ -109,11 +109,11 @@ function buildExtension(options: IBuildOptions) {
   // Set up and run the WebPack compilation.
   let compiler = webpack(config);
   compiler.context = name;
-  compiler.run(function(err, stats) {
+  compiler.run((err, stats) => {
     if (err) {
       console.error(err.message);
     } else {
-      console.log('\n\nSuccessfully built "' + name + '":\n');
+      console.log(`\n\nSuccessfully built "${name}":\n`);
       process.stdout.write(stats.toString({
         chunks: true,
         modules: false,
