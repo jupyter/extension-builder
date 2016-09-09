@@ -23,6 +23,22 @@ import {
 
 
 /**
+ * The default file loaders.
+ */
+const
+DEFAULT_LOADERS = [
+  { test: /\.json$/, loader: 'json-loader' },
+  { test: /\.html$/, loader: 'file-loader' },
+  { test: /\.(jpg|png|gif)$/, loader: 'file-loader' },
+  { test: /\.woff2(\?v=\d+\.\d+\.\d+)?$/, loader: 'url-loader?limit=10000&mimetype=application/font-woff' },
+  { test: /\.woff(\?v=\d+\.\d+\.\d+)?$/, loader: 'url-loader?limit=10000&mimetype=application/font-woff' },
+  { test: /\.ttf(\?v=\d+\.\d+\.\d+)?$/, loader: 'url-loader?limit=10000&mimetype=application/octet-stream' },
+  { test: /\.eot(\?v=\d+\.\d+\.\d+)?$/, loader: 'file-loader' },
+  { test: /\.svg(\?v=\d+\.\d+\.\d+)?$/, loader: 'url-loader?limit=10000&mimetype=image/svg+xml' }
+];
+
+
+/**
  * Build a JupyterLab extension.
  *
  * @param options - The options used to build the extension.
@@ -76,6 +92,15 @@ function buildExtension(options: IBuildOptions) {
     });
   }
 
+  // Add the rest of the default loaders unless explicitly told otherwise.
+  if (options.useDefaultLoaders !== false) {
+    config.merge({
+      module: {
+        loaders: DEFAULT_LOADERS
+      }
+    });
+  }
+
   // Set up and run the WebPack compilation.
   let compiler = webpack(config);
   compiler.context = name;
@@ -116,6 +141,13 @@ interface IBuildOptions {
    * Note: no other CSS loaders should be used if set to True.
    */
   extractCSS?: boolean;
+
+  /**
+   * Whether to use the default loaders for other file types.
+   *
+   * The default is true.
+   */
+  useDefaultLoaders?: boolean;
 
   /**
    * Extra webpack configuration.
