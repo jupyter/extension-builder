@@ -134,7 +134,7 @@ class JupyterLabPlugin {
     let pluginName = this._name;
     let publicPath = this._publicPath;
     let requireName = `__${pluginName}_require__`;
-    let source = mod.source().source();
+    let source = mod._source.source();
 
     // Regular modules.
     if (mod.userRequest) {
