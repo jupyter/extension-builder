@@ -57,7 +57,7 @@ function buildExtension(options: IBuildOptions) {
   try {
     fs.statSync(path.join(process.cwd(), entryPath));
   } catch (e) {
-    throw Error('Invalid path to entry point: ' + entryPath);
+    throw Error(`Invalid path to entry point: ${entryPath}`);
   }
 
   // Create the named entry point to the entryPath.
@@ -70,7 +70,7 @@ function buildExtension(options: IBuildOptions) {
     output: {
       path: path.join(process.cwd(), 'build'),
       filename: '[name].bundle.js',
-      publicPath: 'labextension/' + name
+      publicPath: `labextension/${name}`
     },
     node: {
       fs: 'empty'
