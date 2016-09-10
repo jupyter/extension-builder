@@ -138,13 +138,13 @@ class ModuleLoader {
     }
 
     if (!matches.length) {
-      throw Error('No module found matching: ' + path);
+      throw Error(`No module found matching: ${path}`);
     }
     let index = 0;
     if (matches.length > 1) {
       let best = maxSatisfying(versions, source.version);
       if (!best) {
-        throw new Error('No module found satisying: ' + path);
+        throw new Error(`No module found satisying: ${path}`);
       }
       index = versions.indexOf(best);
     }

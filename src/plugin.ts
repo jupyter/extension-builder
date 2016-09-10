@@ -60,7 +60,7 @@ class JupyterLabPlugin {
 
         // We don't allow externals.
         if (mod.external) {
-          throw Error('Cannot use externals:' + mod.userRequest);
+          throw Error(`Cannot use externals: ${mod.userRequest}`);
         }
 
         // Parse each module.
@@ -106,7 +106,7 @@ class JupyterLabPlugin {
 
       let manifestSource = JSON.stringify(manifest, null, '\t');
 
-      compilation.assets[fileName + '.manifest'] = {
+      compilation.assets[`${fileName}.manifest`] = {
         source: () => {
           return manifestSource;
         },
@@ -133,7 +133,7 @@ class JupyterLabPlugin {
   private _parseModule(compilation: any, mod: any): string {
     let pluginName = this._name;
     let publicPath = this._publicPath;
-    let requireName = '__' + pluginName + '_require__';
+    let requireName = `__${pluginName}_require__`;
     let source = mod.source().source();
 
     // Regular modules.
@@ -151,9 +151,9 @@ class JupyterLabPlugin {
       let deps = mod.getAllModuleDependencies();
       for (let i = 0; i < deps.length; i++) {
         let dep = deps[i];
-        let target = '__webpack_require__(' + dep.id + ')';
+        let target = `__webpack_require__(${dep.id})`;
         let modPath = Private.getRequirePath(dep);
-        let replacer = '__webpack_require__(\'' + modPath + '\')';
+        let replacer = `__webpack_require__('${modPath}')`;
         source = source.split(target).join(replacer);
       }
     // Context modules.
@@ -161,12 +161,12 @@ class JupyterLabPlugin {
       // Context modules have to be assembled ourselves
       // because they are not clearly delimited in the text.
       source = Private.createContextModule(mod);
-      source = source.split('webpackContext').join(pluginName + 'Context');
+      source = source.split('webpackContext').join(`${pluginName}Context`);
     }
 
     // Handle public requires.
     let requireP = '__webpack_require__.p';
-    let newRequireP = '\'' + publicPath + '\'';
+    let newRequireP = `'${publicPath}'`;
     source = source.split(requireP).join(newRequireP);
 
     // Replace the require name with the custom one.
@@ -174,10 +174,13 @@ class JupyterLabPlugin {
 
     // Create our header and footer with a version-mangled defined name.
     let definePath = Private.getDefinePath(mod);
-    let header = '/** START DEFINE BLOCK for ' + definePath + ' **/\n';
-    header += pluginName + '.define(\'' + definePath;
-    header += '\', function (module, exports, ' + requireName + ') {\n\t';
-    let footer = '\n})\n/** END DEFINE BLOCK for ' + definePath + ' **/';
+    let header = `/** START DEFINE BLOCK for ${definePath} **/
+${pluginName}.define('${definePath}', function (module, exports, ${requireName}) {
+\t`;
+    let footer = `
+})
+/** END DEFINE BLOCK for ${definePath} **/
+`;
 
     // Combine code and indent.
     return header + source.split('\n').join('\n\t') + footer;
@@ -209,8 +212,7 @@ class JupyterLabPlugin {
           fileName = chunk.files[0];
         }
       });
-      let replacement = ('__webpack_require__.ensure(\'' + publicPath +
-              fileName + '\'');
+      let replacement = `__webpack_require__.ensure('${publicPath}${fileName}'`;
       source = source.replace(regex, replacement);
     }
     return source;
@@ -343,7 +345,7 @@ namespace Private {
       let prev = request;
       request = path.dirname(request);
       if (request === prev) {
-        throw Error('Could not find package for ' + orig);
+        throw Error(`Could not find package for ${orig}`);
       }
     }
   }
@@ -371,9 +373,9 @@ namespace Private {
     let rootPath = findRoot(path);
     let pkg = getPackage(rootPath);
     let modPath = path.slice(rootPath.length + 1);
-    let name = pkg.name + '@' + pkg.version;
+    let name = `${pkg.name}@${pkg.version}`;
     if (modPath) {
-      name += '/' + modPath;
+      name += `/${modPath}`;
     }
     return name;
   }
@@ -397,16 +399,16 @@ namespace Private {
     let semver = issuerPackage.dependencies[name] || rootPackage.version;
     if (issuerPackage.name === rootPackage.name) {
       // Allow patch version increments of itself.
-      semver = '~' + rootPackage.version;
+      semver = `~${rootPackage.version}`;
     } else if (semver.indexOf('file:') === 0) {
       let sourcePath = path.resolve(issuerPath, semver.slice('file:'.length));
       let sourcePackage = getPackage(sourcePath);
       // Allow patch version increments of local packages.
-      semver = '~' + sourcePackage.version;
+      semver = `~${sourcePackage.version}`;
     }
-    let id = name + '@' + semver;
+    let id = `${name}@${semver}`;
     if (modPath) {
-      id += '/' + modPath;
+      id += `/${modPath}`;
     }
     return id;
   }
