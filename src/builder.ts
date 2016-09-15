@@ -46,29 +46,26 @@ DEFAULT_LOADERS = [
 export
 function buildExtension(options: IBuildOptions) {
   let name = options.name;
-  let entryPath = options.entryPath;
 
   if (!name) {
     throw Error('Must specify a name for the extension');
   }
-  if (!entryPath) {
-    throw Error('Must specify an entryPath');
+  if (!options.entry) {
+    throw Error('Must specify an entry module');
   }
-  try {
-    fs.statSync(path.join(process.cwd(), entryPath));
-  } catch (e) {
-    throw Error(`Invalid path to entry point: ${entryPath}`);
+  if (!options.outputDir) {
+    throw Error('Must specify an output directory');
   }
 
   // Create the named entry point to the entryPath.
   let entry: { [key: string]: string } = {};
-  entry[name] = options.entryPath;
+  entry[name] = options.entry;
 
   let config = new Config().merge({
     // The default options.
     entry: entry,
     output: {
-      path: path.join(process.cwd(), 'build'),
+      path: path.resolve(options.outputDir),
       filename: '[name].bundle.js',
       publicPath: `labextension/${name}`
     },
@@ -136,9 +133,20 @@ interface IBuildOptions {
   name: string;
 
   /**
-   * The path to the entry point.
+   * The module to load as the entry point.
+   *
+   * The module should export a plugin configuration or array of
+   * plugin configurations.
    */
-  entryPath: string;
+  entry: string;
+
+  /**
+   * The directory in which to put the generated bundle files.
+   *
+   * Relative directories are resolved relative to the current
+   * working directory of the process.
+   */
+  outputDir: string;
 
   /**
    * Whether to extract CSS from the bundles (default is True).
