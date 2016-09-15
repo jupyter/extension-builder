@@ -51,7 +51,10 @@ function buildExtension(options: IBuildOptions) {
     throw Error('Must specify a name for the extension');
   }
   if (!options.entry) {
-    throw Error('Must specify an entryPath');
+    throw Error('Must specify an entry module');
+  }
+  if (!options.outputDir) {
+    throw Error('Must specify an output directory');
   }
 
   // Create the named entry point to the entryPath.
@@ -62,7 +65,7 @@ function buildExtension(options: IBuildOptions) {
     // The default options.
     entry: entry,
     output: {
-      path: path.resolve(options.outputDir || './build'),
+      path: path.resolve(options.outputDir),
       filename: '[name].bundle.js',
       publicPath: `labextension/${name}`
     },
@@ -138,12 +141,12 @@ interface IBuildOptions {
   entry: string;
 
   /**
-   * The directory in which to put the bundled files.
+   * The directory in which to put the generated bundle files.
    *
    * Relative directories are resolved relative to the current
-   * working directory of the process. The default is './build'.
+   * working directory of the process.
    */
-  outputDir?: string;
+  outputDir: string;
 
   /**
    * Whether to extract CSS from the bundles (default is True).
