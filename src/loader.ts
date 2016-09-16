@@ -111,6 +111,10 @@ class ModuleLoader {
    * @returns The matching defined module path, if registered.  A match is
    *   the registered path that maximally satisfies the semver range of the
    *   request.
+   *
+   * #### Notes
+   * If the path has loaders, and thus multiple packages and modules delimited
+   * by '!', then the versions are matched in reverse order.
    */
   private _findMatch(path: string): string {
     // Use the cached match if available.
@@ -119,37 +123,43 @@ class ModuleLoader {
       return cache[path];
     }
     let modules = Object.keys(this._registered);
-    let source = this._parsePath(path);
-    if (!source) {
+    let sources = path.split('!').map(path => this._parsePath(path));
+    if (sources.some(elem => !elem)) {
+      // check to see if any element of sources is falsey
       throw Error('Invalid module path ' + path);
     }
     let matches: string[] = [];
-    let versions: string[] = [];
+    let versions: string[][] = [];
     for (let mod of modules) {
-      let target = this._parsePath(mod);
-      if (!target) {
+      let targets = mod.split('!').map(path => this._parsePath(path));
+      if (targets.some(e => !e)) {
         continue;
       }
-      if (source.package === target.package &&
-          source.module === target.module) {
+      if (sources.length === targets.length && sources.every((source, i) => {
+        return (source.package === targets[i].package
+          && source.module === targets[i].module);
+      })) {
         matches.push(mod);
-        versions.push(target.version);
+        versions.push(targets.map(t => t.version))
       }
     }
 
     if (!matches.length) {
       throw Error(`No module found matching: ${path}`);
     }
-    let index = 0;
-    if (matches.length > 1) {
-      let best = maxSatisfying(versions, source.version);
+
+    // If we have a chain of loaders, we want
+    // to filter for best versions in reverse order.
+    for (let part = versions[0].length - 1; matches.length > 1 && part >= 0; part--) {
+      let best = maxSatisfying(versions.map(v => v[part]), sources[part].version)
       if (!best) {
-        throw new Error(`No module found satisying: ${path}`);
+        throw new Error(`No module found satisfying ${path}`);
       }
-      index = versions.indexOf(best);
+      matches = matches.filter((mod, index) => versions[index][part] === best);
+      versions = versions.filter(v => v[part] === best);
     }
-    cache[path] = matches[index];
-    return matches[index];
+    cache[path] = matches[0];
+    return matches[0];
   }
 
   /**
