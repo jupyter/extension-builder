@@ -363,7 +363,7 @@ namespace Private {
   }
 
   /**
-   * Get a mangled path for a path using the extact version.
+   * Get a mangled path for a path using the exact version.
    *
    * @param path - The absolute path of the module.
    *
