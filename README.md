@@ -1,7 +1,6 @@
-JupyterLab Extension Builder
-============================
+# JupyterLab Extension Builder
 
-Tools for building JupyterLab extensions.
+**Tools for building JupyterLab extensions**
 
 A JupyterLab extension provides additional, optional functionality to 
 JupyterLab's built-in capabilities. The extension is a module that provides 
@@ -13,6 +12,45 @@ Simple extensions can be created by using the `buildExtension` function
 with the default options.  More advanced extensions may require additional
 configuration such as custom loaders or WebPack plugins.
 
+
+## Package Install
+
+**Prerequisites**
+- [node](http://nodejs.org/)
+
+```bash
+npm install --save jupyterlab-extension-builder
+```
+
+
+## Source Build
+
+**Prerequisites**
+- [git](http://git-scm.com/)
+- [node 0.12+](http://nodejs.org/)
+
+```bash
+git clone https://github.com/jupyter/jupyterlab-extension-builder.git
+cd jupyterlab-extension-builder
+npm install
+npm run build
+```
+### Rebuild Source
+
+```bash
+npm run clean
+npm run build
+```
+
+
+## Usage
+
+Three major usage steps include:
+- creating the [extension entry point](#extension-entry-point)
+- build using the [buildExtension](#buildExtension) script
+- register the extension using [`jupyter labextension`](#jupyter-labextension)
+
+### Extension entry point
 A simple extension entry point could look like: 
 
 ```javascript
@@ -24,6 +62,7 @@ module.exports = [{
 }];
 ```
 
+### buildExtension
 Build the above example using the following script:
 
 ```javascript
@@ -44,12 +83,16 @@ build/my-cool-extension.js
 build/my-cool-extension.js.manifest
 ```
 
+### jupyter labextension
 Other extensions may produce additional files in the build directory
 depending on the complexity of extension.  The two files above, 
 my-cool-extension.js and my-cool-extension.js.manifest,
 are used by the JupyterLab server to determine the entry point file(s) and 
 entry point module(s) for the extension.  The extension must also be registered, using the command `jupyter labextension`, in order to be added to 
 the JupyterLab application.
+
+
+## Technical overview
 
 The extension bundles are created using Webpack, and the modules produced by Webpack are modified to use JupyterLab's custom module registration and loading mechanism. 
 
@@ -71,48 +114,15 @@ Reasons to deduplicate code include:
 - being able to use `isinstance()` on an object to determine if it is the same class (a technique used by phosphor's drag-drop mechanism)
 - sharing of module-private state between different consumers, such as a list of client-side running kernels in `jupyter-js-services`.
 
-
 All client-side `require()` calls are synchronous, which means that the 
 bundles containing the `define()` modules must be loaded prior to using
 any of the bundles' functions.  The loader provides an `ensureBundle()` 
 function to load a particular bundle or bundles prior to calling `require()` on
 a module.
 
+### Custom Webpack Configuration and JupyterLabPlugin
 A completely custom Webpack configuration may be needed if there is a case 
 where the `buildExtension` function is not sufficient to build the extension. 
 If a custom Webpack configuration is needed, the `JupyterLabPlugin` must be 
 used as part of the Webpack config to ensure proper handling of module 
 definition and requires.
-
-
-Package Install
----------------
-
-**Prerequisites**
-- [node](http://nodejs.org/)
-
-```bash
-npm install --save jupyterlab-extension-builder
-```
-
-
-Source Build
-------------
-
-**Prerequisites**
-- [git](http://git-scm.com/)
-- [node 0.12+](http://nodejs.org/)
-
-```bash
-git clone https://github.com/jupyter/jupyterlab-extension-builder.git
-cd jupyterlab-extension-builder
-npm install
-npm run build
-```
-
-**Rebuild**
-```bash
-npm run clean
-npm run build
-```
-
