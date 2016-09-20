@@ -365,16 +365,17 @@ namespace Private {
   /**
    * Get a mangled path for a path using the exact version.
    *
-   * @param path - The absolute path of the module.
+   * @param modPath - The absolute path of the module.
    *
    * @returns A version-mangled path (e.g. 'foo@1.0.0/lib/bar/baz.js')
    */
-  function getModuleVersionPath(path: string): string {
-    let rootPath = findRoot(path);
+  function getModuleVersionPath(modPath: string): string {
+    let rootPath = findRoot(modPath);
     let pkg = getPackage(rootPath);
-    let modPath = path.slice(rootPath.length + 1);
+    modPath = modPath.slice(rootPath.length + 1);
     let name = `${pkg.name}@${pkg.version}`;
     if (modPath) {
+      modPath = modPath.split(path.sep).join('/');
       name += `/${modPath}`;
     }
     return name;
@@ -396,7 +397,8 @@ namespace Private {
     let issuerPackage = getPackage(issuer);
     let modPath = request.slice(rootPath.length + 1);
     let name = rootPackage.name;
-    let semver = issuerPackage.dependencies[name] || rootPackage.version;
+    let semver = ((issuerPackage.dependencies &&
+                   issuerPackage.dependencies[name]) || rootPackage.version);
     if (issuerPackage.name === rootPackage.name) {
       // Allow patch version increments of itself.
       semver = `~${rootPackage.version}`;
@@ -408,6 +410,7 @@ namespace Private {
     }
     let id = `${name}@${semver}`;
     if (modPath) {
+      modPath = modPath.split(path.sep).join('/');
       id += `/${modPath}`;
     }
     return id;
