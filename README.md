@@ -3,14 +3,15 @@ JupyterLab Extension Builder
 
 Tools for building JupyterLab extensions.
 
-An extension to JupyterLab is a module that provides one or more
-plugins to the JupyterLab application.  This library provides
-a build script for generating third party extension JavaScript
-bundles.  
+A JupyterLab extension provides additional, optional functionality to 
+JupyterLab's built-in capabilities. The extension is a module that provides 
+one or more plugins to the JupyterLab application. To streamline third-party 
+development of extensions, this library provides a build script for generating 
+third party extension JavaScript bundles.  
 
 Simple extensions can be created by using the `buildExtension` function
 with the default options.  More advanced extensions may require additional
-configuration.
+configuration such as custom loaders or WebPack plugins.
 
 A simple extension entry point could look like: 
 
@@ -23,7 +24,7 @@ module.exports = [{
 }];
 ```
 
-The above could be built using the following script:
+Build the above example using the following script:
 
 ```javascript
 var buildExtension = require('jupyterlab-extension-builder').buildExtension;
@@ -35,19 +36,20 @@ buildExtension({
 });
 ```
 
-In this case the builder script will create the following files:
+In this case the builder script will create the following files in the build
+directory:
 
 ```
 build/my-cool-extension.js
 build/my-cool-extension.js.manifest
 ```
 
-Other extensions may produce other files in the build directory
-depending on the complexity of extension.  The two files above
-are used by JupyterLab server to determine the entry point file(s) and 
-entry point module(s) for the extension.  The extension must also be 
-registered using `jupyter labextension` in order to be added to the 
-application.
+Other extensions may produce additional files in the build directory
+depending on the complexity of extension.  The two files above, 
+my-cool-extension.js and my-cool-extension.js.manifest,
+are used by the JupyterLab server to determine the entry point file(s) and 
+entry point module(s) for the extension.  The extension must also be registered, using the command `jupyter labextension`, in order to be added to 
+the JupyterLab application.
 
 The bundles are created using Webpack, where the modules produced
 by Webpack are modified to use the JupyterLab custom module registration
