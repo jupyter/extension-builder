@@ -2,3 +2,15 @@ language: node_js
 node_js:
 - '5'
 sudo: false
+env:
+  matrix:
+  - GROUP=
+  global:
+  - GH_REF: github.com/jupyter/jupyterlab-extension-builder.git
+  - secure: CX2Ja1IEuuA/uMaCjvliQPsrORysnJCP1PguALtGnwIbhlq+dxza+g7hDWRYC/hb9Ut11q6nUWYa+DVC2b0OPA3KSwFA7XrEHgi2scQtNhTBkD062S5whDBQfl0kPobpIoJil5pk1lXx8fVyMInH7NAgCMsHwRjHEjwus/U4g0/jOB8r8MjI51hdmCc2kPbV58Ay4qa87kaizfUMVq3vuKVpAHy6RxfVHHVnHgQr54biNDr2yD9uPR2zJDeoFg3/eUyYK8PcN1fhgkk5bfWseIR9GYwmrAhUhyExKA968JIZN1zQi9rd87NM+CPJLk89Yy02KAm8NjJ80z2uvEA0uHDhDXVc1NVLi50/TF6huN6zD6nmINRkWwOFojinWKKo308KIZBRCG8TXu5Crlb7qbmEDAkvuG+qZh/Z/fRYZkUvIRnHYqijKAwYMCxKl00KBjwzWRKNnTVVS1w3Iw3f++vUb/QfY8R5j+EXRMs29RjrlYCV7W5K0HKBZjnYYtyXyuAZNC/JgXxe+bAafQaPnnEcntiZGdCHmk/iugzUzt6TkyDWtXDd7DYZaYoMbb9TmibolXVEIS3h3OYZ4zYyN1s8sEThLyyRg0GKGD9KWzaIWZWvgxk812U2sMjIhUxAhtnZDT34F0EMvgKlO6DPuaOTgzHnQqUCbyoUqTIAVfU=
+install:
+- bash ./scripts/travis_install.sh
+script:
+- bash ./scripts/travis_script.sh
+after_success:
+- bash ./scripts/travis_after_success.sh

@@ -12,6 +12,8 @@ Simple extensions can be created by using the `buildExtension` function
 with the default options.  More advanced extensions may require additional
 configuration such as custom loaders or WebPack plugins.
 
+A video tutorial walkthrough for building JupyterLab extensions can be found on [YouTube](https://youtu.be/WVDCMIQ3KOk).
+
 
 ## Package Install
 
@@ -50,8 +52,10 @@ Three major usage steps include:
 - build using the [buildExtension](#buildExtension) script
 - register the extension using [`jupyter labextension`](#jupyter-labextension)
 
+The full API docs can be found [here](http://jupyter.github.io/jupyterlab/).
+
 ### Extension entry point
-A simple extension entry point that exposes a single application plugin could 
+A simple extension entry point that exposes a single application [plugin](http://jupyterlab-tutorial.readthedocs.io/en/latest/plugins.html) could 
 look like: 
 
 ```javascript
@@ -62,6 +66,10 @@ module.exports = [{
     }
 }];
 ```
+
+The extension entry point *must* be a CommonJS module where the default
+export is an array of plugin objects.  If writing in ES6 format use the
+`export default [ ... ];` syntax.
 
 
 ### buildExtension
@@ -91,10 +99,10 @@ my-cool-extension.js.manifest
 ### jupyter labextension
 Other extensions may produce additional files in the build directory
 depending on the complexity of extension.  The two files above, 
-my-cool-extension.js and my-cool-extension.js.manifest,
+`my-cool-extension.js` and `my-cool-extension.js.manifest`,
 are used by the JupyterLab server to determine the entry point file(s) and 
 entry point module(s) for the extension.  The extension must also be registered, using the command `jupyter labextension`, in order to be added to 
-the JupyterLab application.
+the JupyterLab application.  See the documentation for [labextension](http://jupyterlab-tutorial.readthedocs.io/en/latest/labextensions.html)
 
 
 ## Technical overview
