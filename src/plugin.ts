@@ -396,7 +396,8 @@ namespace Private {
     let issuerPackage = getPackage(issuer);
     let modPath = request.slice(rootPath.length + 1);
     let name = rootPackage.name;
-    let semver = issuerPackage.dependencies[name] || rootPackage.version;
+    let semver = (issuerPackage.dependencies &&
+                  issuerPackage.dependencies[name]) || rootPackage.version);
     if (issuerPackage.name === rootPackage.name) {
       // Allow patch version increments of itself.
       semver = `~${rootPackage.version}`;
