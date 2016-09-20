@@ -51,37 +51,37 @@ are used by the JupyterLab server to determine the entry point file(s) and
 entry point module(s) for the extension.  The extension must also be registered, using the command `jupyter labextension`, in order to be added to 
 the JupyterLab application.
 
-The bundles are created using Webpack, where the modules produced
-by Webpack are modified to use the JupyterLab custom module registration
-and loading mechanism.  
+The extension bundles are created using Webpack, and the modules produced by Webpack are modified to use JupyterLab's custom module registration and loading mechanism. 
 
-The module loading mechanism uses a `define` function that registers
-modules by name, where the name contains the package name, version 
-number, and the full path to the module.  For example, 'phosphor@0.6.1/lib/ui/widget.js'.  Within a `define` function, modules are required by package
-name, semver range, and the full path to the module.  For example,
-`require('phosphor@^0.6.0/lib/ui/tabpanel.js')`.  
+JupyterLab's custom module registration and loading mechanism uses a `define` 
+function that registers modules by name, where the name contains the package 
+name, version number, and the full path to the module.  For example, 
+'phosphor@0.6.1/lib/ui/widget.js'.  Within a `define` function, a required 
+module is referenced by package name, semver range, and the full path to the 
+module.  For example, `require('phosphor@^0.6.0/lib/ui/tabpanel.js')`.  
 
-By using a semver range, we enable client-side deduplication of modules, where 
-the registered module that maximally satisfies a semver range is the one 
-returned by the `require` function call.  This also enables us to perform 
-server-side deduplication of modules prior to serving the bundles, the 
-client-side lookup will still load the correct modules.  Reasons to deduplicate
-code include being able to use `isinstance()` on an object to determine if
-it is the same class (a technique used by phosphor's drag-drop mechanism).  
-Another reason is for sharing of module-private state between different
-consumers, such as a list of client-side running kernels in 
-`jupyter-js-services`.
+By using a server range, JupyterLab can perform client-side deduplication of 
+modules, where the registered module that maximally satisfies a semver range 
+is the one  returned by the `require` function call.  This also enables us to 
+perform  server-side deduplication of modules prior to serving the bundles, 
+and the client-side lookup will still load the correct modules.  
+
+Reasons to deduplicate code include:
+
+- being able to use `isinstance()` on an object to determine if it is the same class (a technique used by phosphor's drag-drop mechanism)
+- sharing of module-private state between different consumers, such as a list of client-side running kernels in `jupyter-js-services`.
+
 
 All client-side `require()` calls are synchronous, which means that the 
 bundles containing the `define()` modules must be loaded prior to using
-any of their functions.  The loader provides an `ensureBundle()` function
-to load a particular bundle or bundles prior to calling `require()` on
+any of the bundles' functions.  The loader provides an `ensureBundle()` 
+function to load a particular bundle or bundles prior to calling `require()` on
 a module.
 
-There may be some cases where the `buildExtension` function is not sufficient
-to build an extension and a completely custom Webpack configuration is 
-needed.  In that case, the only requirement is that the `JupyterLabPlugin` be 
-used as part of the Webpack config to ensure the proper handling of module
+A completely custom Webpack configuration may be needed if there is a case 
+where the `buildExtension` function is not sufficient to build the extension. 
+If a custom Webpack configuration is needed, the `JupyterLabPlugin` must be 
+used as part of the Webpack config to ensure proper handling of module 
 definition and requires.
 
 
