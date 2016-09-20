@@ -52,6 +52,8 @@ Three major usage steps include:
 - build using the [buildExtension](#buildExtension) script
 - register the extension using [`jupyter labextension`](#jupyter-labextension)
 
+The full API docs can be found [here](http://jupyter.github.io/jupyterlab/).
+
 ### Extension entry point
 A simple extension entry point that exposes a single application [plugin](http://jupyterlab-tutorial.readthedocs.io/en/latest/plugins.html) could 
 look like: 

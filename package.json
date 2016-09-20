@@ -9,6 +9,8 @@
   ],
   "scripts": {
     "build": "tsc --project src",
+    "clean": "rimraf docs && rimraf lib",
+    "docs": "typedoc --mode modules --module commonjs --excludeNotExported --target es5 --moduleResolution node --out docs/ src",
     "prepublish": "npm run build",
     "test": "echo \"Error: no test specified\" && exit 0"
   },
@@ -29,6 +31,7 @@
   "homepage": "https://github.com/jupyter/jupyterlab-extension-builder#readme",
   "devDependencies": {
     "rimraf": "^2.5.4",
+    "typedoc": "^0.4.5",
     "typescript": "^1.8.10"
   },
   "dependencies": {
