@@ -27,7 +27,7 @@ npm install --save jupyterlab-extension-builder
 
 **Prerequisites**
 - [git](http://git-scm.com/)
-- [node 0.12+](http://nodejs.org/)
+- [node 4+](http://nodejs.org/)
 
 ```bash
 git clone https://github.com/jupyter/jupyterlab-extension-builder.git
@@ -63,6 +63,7 @@ module.exports = [{
 }];
 ```
 
+
 ### buildExtension
 Build the above example using the following script:
 
@@ -75,12 +76,15 @@ buildExtension({
     outputDir: './build'
 });
 ```
+The `name` is a string that will be used for the output filename. The `entry` is the module that exports a plugin definition or array of plugin definitions. The `outputDir` is the directory in which the generated plugin bundle, manifest, and related files will be stored.
+
+Several optional arguments are also available; see the options at the bottom of the [builder.ts](https://github.com/jupyter/jupyterlab-extension-builder/blob/master/src/builder.ts) file.
 
 In this case the builder script will create the following files in the build
 directory:
 
 ```
-my-cool-extension.js
+my-cool-extension.bundle.js
 my-cool-extension.js.manifest
 ```
 
@@ -104,7 +108,7 @@ name, version number, and the full path to the module.  For example,
 module is referenced by package name, semver range, and the full path to the 
 module.  For example, `require('phosphor@^0.6.0/lib/ui/tabpanel.js')`.  
 
-By using a server range, JupyterLab can perform client-side deduplication of 
+By using a semver range, JupyterLab can perform client-side deduplication of 
 modules, where the registered module that maximally satisfies a semver range 
 is the one  returned by the `require` function call.  This also enables us to 
 perform  server-side deduplication of modules prior to serving the bundles, 
