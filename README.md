@@ -31,8 +31,8 @@ var buildExtension = require('jupyterlab-extension-builder').buildExtension;
 
 buildExtension({
     name: 'my-cool-extension',
-    entryPath: './index.js',
-    outputPath: './build'
+    entry: './index.js',
+    outputDir: './build'
 });
 ```
 
