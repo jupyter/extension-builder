@@ -68,7 +68,7 @@ code include being able to use `isinstance()` on an object to determine if
 it is the same class (a technique used by phosphor's drag-drop mechanism).  
 Another reason is for sharing of module-private state between different
 consumers, such as a list of client-side running kernels in 
-`jupyter-js-services.
+`jupyter-js-services`.
 
 All client-side `require()` calls are synchronous, which means that the 
 bundles containing the `define()` modules must be loaded prior to using
