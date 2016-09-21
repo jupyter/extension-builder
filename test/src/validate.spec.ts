@@ -5,7 +5,7 @@ import expect = require('expect.js');
 
 import {
   validateEntry
-} from '../../lib';
+} from '../../lib/validate';
 
 
 describe('validate', () => {
