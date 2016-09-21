@@ -134,7 +134,16 @@ class JupyterLabPlugin {
     let pluginName = this._name;
     let publicPath = this._publicPath;
     let requireName = `__${pluginName}_require__`;
-    let source = mod._source().source();
+    // There is no public API in WebPack to get the raw module source
+    // The method used below is known to work in almost all cases
+    // The base prototype of the module source() method takes no arguments,
+    // but the normal module source() takes three arguments and is intended
+    // to be called by its module factory.
+    // We can call the normal module source() because it has already been
+    // run in the compilation process and will return the cached value,
+    // without relying on the provided arguments.
+    // https://github.com/webpack/webpack/blob/a53799c0ac58983860a27648cdc8519b6a562b89/lib/NormalModule.js#L224-L229
+    let source = mod.source().source();
 
     // Regular modules.
     if (mod.userRequest) {
