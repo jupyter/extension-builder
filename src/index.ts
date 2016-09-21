@@ -3,4 +3,3 @@
 
 export * from './builder';
 export * from './plugin';
-export * from './validate';
