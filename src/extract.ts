@@ -1,14 +1,27 @@
 // Copyright (c) Jupyter Development Team.
 // Distributed under the terms of the Modified BSD License.
 
+import {
+  Application
+} from 'phosphor/lib/ui/application';
+
+import {
+  Widget
+} from 'phosphor/lib/ui/widget';
+
 
 /**
- * Validate the entry point of a JupyterLab extension.
+ * Extract the entry point plugins of a JupyterLab extension.
  *
  * @param data - The loaded entry point module.
+ *
+ * @returns An array of validated plugins.
+ *
+ * #### Notes
+ * The plugin(s) are extracted and validated before being returned.
  */
 export
-function validateEntry(data: any): void {
+function extractPlugins(data: any): Application.IPlugin<Widget, any>[] {
   // We use the default export from es6 modules.
   if (data.__esModule) {
     data = data.default;
@@ -29,4 +42,5 @@ function validateEntry(data: any): void {
       throw Error(`Missing activate function in '${id}'`);
     }
   }
+  return data;
 }
