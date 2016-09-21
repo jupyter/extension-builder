@@ -4,16 +4,16 @@
 import expect = require('expect.js');
 
 import {
-  validateEntry
-} from '../../lib/validate';
+  extractPlugins
+} from '../../lib/extract';
 
 
-describe('validate', () => {
+describe('extract', () => {
 
-  describe('validateEntry()', () => {
+  describe('extractPlugins()', () => {
 
     it('should pass for a valid plugin array', () => {
-      validateEntry([{
+      extractPlugins([{
         id: 'foo',
         activate: () => { /* no-op */ }
       }, {
@@ -23,14 +23,14 @@ describe('validate', () => {
     });
 
     it('should pass for a valid plugin', () => {
-      validateEntry({
+      extractPlugins({
         id: 'foo',
         activate: () => { /* no-op */ }
       });
     });
 
     it('should pass for an ES6 default', () => {
-      validateEntry({
+      extractPlugins({
         __esModule: true,
         default: {
           id: 'foo',
@@ -40,16 +40,16 @@ describe('validate', () => {
     });
 
     it('should fail if it is an empty array', () => {
-      expect(() => { validateEntry([]); }).to.throwError();
+      expect(() => { extractPlugins([]); }).to.throwError();
     });
 
     it('should fail if a plugin is missing an id', () => {
       let activate: () => { /* no-op */ };
-      expect(() => { validateEntry({ activate }); }).to.throwError();
+      expect(() => { extractPlugins({ activate }); }).to.throwError();
     });
 
     it('should fail if a plugin is missing an activate function', () => {
-      expect(() => { validateEntry({ id: 'foo' }); }).to.throwError();
+      expect(() => { extractPlugins({ id: 'foo' }); }).to.throwError();
     });
 
   });
