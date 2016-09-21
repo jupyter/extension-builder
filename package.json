@@ -8,17 +8,13 @@
     "lib/*.js"
   ],
   "scripts": {
-    "build": "tsc --project src",
-    "build:test": "tsc --project test/src && webpack --config test/webpack.conf.js",
+    "build": "tsc --project src && tsc --project test/src",
     "clean": "rimraf docs && rimraf lib",
     "docs": "typedoc --mode modules --module commonjs --excludeNotExported --target es5 --moduleResolution node --out docs/ src",
     "prepublish": "npm run build",
-    "test": "npm run test:firefox",
-    "test:chrome": "npm run build:test && karma start --browsers=Chrome test/karma.conf.js",
-    "test:coverage": "npm run build:test && webpack --config test/webpack-cov.conf.js && karma start test/karma-cov.conf.js",
-    "test:debug": "npm run build:test && karma start --browsers=Chrome --singleRun=false --debug=true test/karma.conf.js",
-    "test:firefox": "npm run build:test && karma start --browsers=Firefox test/karma.conf.js",
-    "test:ie": "npm run build:test && karma start --browsers=IE test/karma.conf.js"
+    "test:coverage": "istanbul cover --dir test/coverage _mocha -- test/build/**/**.spec.js",
+    "test:debug": "mocha test/build/**/**.spec.js --debug-brk",
+    "test": "mocha test/build/**/**.spec.js"
   },
   "repository": {
     "type": "git",
@@ -37,14 +33,8 @@
   "homepage": "https://github.com/jupyter/jupyterlab-extension-builder#readme",
   "devDependencies": {
     "es6-promise": "^3.3.1",
-    "istanbul-instrumenter-loader": "^0.1.3",
-    "karma": "^0.13.19",
-    "karma-chrome-launcher": "^0.2.2",
-    "karma-coverage": "^0.5.3",
-    "karma-firefox-launcher": "^0.1.7",
-    "karma-ie-launcher": "^0.2.0",
-    "karma-mocha": "^0.2.1",
-    "karma-mocha-reporter": "^1.1.5",
+    "expect.js": "^0.3.1",
+    "istanbul": "^0.4.5",
     "mocha": "^2.3.4",
     "rimraf": "^2.5.4",
     "typedoc": "^0.4.5",
