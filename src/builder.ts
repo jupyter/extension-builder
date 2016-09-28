@@ -105,7 +105,10 @@ function buildExtension(options: IBuildOptions) {
   compiler.context = name;
   compiler.run((err, stats) => {
     if (err) {
-      console.error(err.message);
+      console.error(err.stack || err);
+      if (err.details) {
+        console.error(err.details);
+      }
     } else {
       console.log(`\n\nSuccessfully built "${name}":\n`);
       process.stdout.write(stats.toString({
