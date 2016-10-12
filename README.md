@@ -21,7 +21,7 @@ A video tutorial walkthrough for building JupyterLab extensions can be found on 
 - [node](http://nodejs.org/)
 
 ```bash
-npm install --save jupyterlab-extension-builder
+npm install --save @jupyterlab/extension-builder
 ```
 
 
@@ -32,8 +32,8 @@ npm install --save jupyterlab-extension-builder
 - [node 4+](http://nodejs.org/)
 
 ```bash
-git clone https://github.com/jupyter/jupyterlab-extension-builder.git
-cd jupyterlab-extension-builder
+git clone https://github.com/jupyterlab/extension-builder.git
+cd extension-builder
 npm install
 npm run build
 ```
@@ -52,7 +52,7 @@ Three major usage steps include:
 - build using the [buildExtension](#buildExtension) script
 - register the extension using [`jupyter labextension`](#jupyter-labextension)
 
-The full API docs can be found [here](http://jupyter.github.io/jupyterlab/).
+The full API docs can be found [here](http://jupyterlab.github.io/jupyterlab/).
 
 ### Extension entry point
 A simple extension entry point that exposes a single application [plugin](http://jupyterlab-tutorial.readthedocs.io/en/latest/plugins.html) could 
@@ -76,7 +76,7 @@ export is an array of plugin objects.  If writing in ES6 format use the
 Build the above example using the following script:
 
 ```javascript
-var buildExtension = require('jupyterlab-extension-builder').buildExtension;
+var buildExtension = require('@jupyterlab/extension-builder').buildExtension;
 
 buildExtension({
     name: 'my-cool-extension',
@@ -125,7 +125,7 @@ and the client-side lookup will still load the correct modules.
 Reasons to deduplicate code include:
 
 - being able to use `instanceof()` on an object to determine if it is the same class (a technique used by phosphor's drag-drop mechanism)
-- sharing of module-private state between different consumers, such as a list of client-side running kernels in `jupyter-js-services`.
+- sharing of module-private state between different consumers, such as a list of client-side running kernels in `@jupyterlab/services`.
 
 All client-side `require()` calls are synchronous, which means that the 
 bundles containing the `define()` modules must be loaded prior to using
