@@ -1,5 +1,5 @@
 {
-  "name": "jupyterlab-extension-builder",
+  "name": "@jupyterlab/extension-builder",
   "version": "0.6.2",
   "description": "Tools for building JupyterLab extensions",
   "main": "lib/index.js",
@@ -18,7 +18,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/jupyter/jupyterlab-extension-builder.git"
+    "url": "git+https://github.com/jupyterlab/extension-builder.git"
   },
   "keywords": [
     "jupyter",
@@ -28,9 +28,9 @@
   "author": "Project Jupyter",
   "license": "BSD-3-Clause",
   "bugs": {
-    "url": "https://github.com/jupyter/jupyterlab-extension-builder/issues"
+    "url": "https://github.com/jupyterlab/extension-builder/issues"
   },
-  "homepage": "https://github.com/jupyter/jupyterlab-extension-builder#readme",
+  "homepage": "https://github.com/jupyterlab/extension-builder#readme",
   "devDependencies": {
     "es6-promise": "^3.3.1",
     "expect.js": "^0.3.1",
