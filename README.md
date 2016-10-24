@@ -139,3 +139,14 @@ where the `buildExtension` function is not sufficient to build the extension.
 If a custom WebPack configuration is needed, the `JupyterLabPlugin` must be 
 used as part of the WebPack config to ensure proper handling of module 
 definition and requires.
+
+
+## Publishing your extension
+Before you publish your extension to `npm`, add the following `keywords` attribute to your extension's `package.json`:
+```
+{
+    "keywords": ["jupyterlab", "jupyterlab extension"],
+    ...
+}
+```
+Adding these keywords will allow other users to discover your extension with `npm search`.
