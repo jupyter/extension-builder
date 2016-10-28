@@ -398,6 +398,11 @@ namespace Private {
    * @param issuer - The path of the issuer of the module request.
    *
    * @returns A semver-mangled path (e.g. 'foo@^1.0.0/lib/bar/baz.js')
+   *
+   * #### Notes
+   * Files in the same package are locked to the exact version number
+   * of the package. Files in local packages (i.e., `file://` packages) are
+   * allowed to vary by patch number (the `~` semver range specifier is added).
    */
   function getModuleSemverPath(request: string, issuer: string): string {
     let rootPath = findRoot(request);
@@ -409,8 +414,7 @@ namespace Private {
     let semver = ((issuerPackage.dependencies &&
                    issuerPackage.dependencies[name]) || rootPackage.version);
     if (issuerPackage.name === rootPackage.name) {
-      // Allow patch version increments of itself.
-      semver = `~${rootPackage.version}`;
+      semver = `${rootPackage.version}`;
     } else if (semver.indexOf('file:') === 0) {
       let sourcePath = path.resolve(issuerPath, semver.slice('file:'.length));
       let sourcePackage = getPackage(sourcePath);
