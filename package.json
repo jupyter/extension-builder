@@ -38,10 +38,11 @@
     "mocha": "^2.3.4",
     "phosphor": "^0.6.1",
     "rimraf": "^2.5.4",
-    "typedoc": "^0.4.5",
-    "typescript": "^1.8.10"
+    "typedoc": "^0.5.0",
+    "typescript": "^2.0.6"
   },
   "dependencies": {
+    "@types/webpack": "^1.12.35",
     "css-loader": "^0.25.0",
     "extract-text-webpack-plugin": "^1.0.1",
     "file-loader": "^0.9.0",
@@ -50,7 +51,7 @@
     "style-loader": "^0.13.1",
     "supports-color": "^3.1.2",
     "url-loader": "^0.5.7",
-    "webpack": "^1.13.2",
-    "webpack-config": "^6.1.2"
+    "webpack": "^1.13.3",
+    "webpack-config": "^6.2.0"
   }
 }

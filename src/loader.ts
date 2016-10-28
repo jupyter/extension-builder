@@ -62,7 +62,7 @@ class ModuleLoader {
     }
 
     // Create a new module (and put it into the cache).
-    let mod = installed[id] = {
+    let mod: Private.IModule = installed[id] = {
       exports: {},
       id,
       loaded: false
