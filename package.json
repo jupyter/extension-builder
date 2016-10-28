@@ -36,7 +36,6 @@
     "@types/mocha": "^2.2.32",
     "@types/node": "^6.0.46",
     "@types/semver": "^5.3.30",
-    "es6-promise": "^3.3.1",
     "expect.js": "^0.3.1",
     "istanbul": "^0.4.5",
     "mocha": "^2.3.4",
