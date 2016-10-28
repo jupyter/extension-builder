@@ -44,6 +44,24 @@ npm run clean
 npm run build
 ```
 
+### Debugging
+
+```
+npm install -g devtool
+```
+
+Insert a `debugger;` statement in the source where you want the execution to
+stop in the debugger. Then execute an extension build with
+
+```
+devtool <my_build_script.js>
+```
+
+or if running WebPack directly,
+
+```
+devtool <path_to_webpack_in_node_modules/bin>
+```
 
 ## Usage
 
@@ -97,48 +115,63 @@ my-cool-extension.js.manifest
 ```
 
 ### jupyter labextension
-Other extensions may produce additional files in the build directory
-depending on the complexity of extension.  The two files above, 
-`my-cool-extension.js` and `my-cool-extension.js.manifest`,
-are used by the JupyterLab server to determine the entry point file(s) and 
-entry point module(s) for the extension.  The extension must also be registered, using the command `jupyter labextension`, in order to be added to 
-the JupyterLab application.  See the documentation for [labextension](http://jupyterlab-tutorial.readthedocs.io/en/latest/labextensions.html)
+Other extensions may produce additional files in the build directory depending
+on the complexity of extension.  The two files above, `my-cool-extension.js` and
+`my-cool-extension.js.manifest`, are used by the JupyterLab server to determine
+the entry point file(s) and entry point module(s) for the extension.  The
+extension must also be registered, using the command `jupyter labextension`, in
+order to be added to the JupyterLab application.  See the documentation for
+[labextension](http://jupyterlab-tutorial.readthedocs.io/en/latest/labextensions.html)
 
 
 ## Technical overview
 
-The extension bundles are created using WebPack, and the modules produced by WebPack are modified to use JupyterLab's custom module registration and loading mechanism. 
+The extension bundles are created using WebPack, and the modules produced by
+WebPack are modified to use JupyterLab's custom module registration and loading
+mechanism.
 
-JupyterLab's custom module registration and loading mechanism uses a `define` 
-function that registers modules by name, where the name contains the package 
-name, version number, and the full path to the module.  For example, 
-`'phosphor@0.6.1/lib/ui/widget.js'`.  Within a `define` function, a required 
-module is referenced by package name, semver range, and the full path to the 
-module.  For example, `require('phosphor@^0.6.0/lib/ui/tabpanel.js')`.  
+JupyterLab's custom module registration and loading mechanism uses a `define`
+function that registers modules by name, where the name contains the package
+name, version number, and the full path to the module.  For example,
+`'phosphor@0.6.1/lib/ui/widget.js'`.  Within a `define` function, a required
+module is referenced by package name, semver range, and the full path to the
+module.  For example, `require('phosphor@^0.6.0/lib/ui/tabpanel.js')`. The
+semver range is determined by the following criteria (see the
+`getModuleSemverPath` function in `plugin.ts`:
 
-By using a semver range, JupyterLab can perform client-side deduplication of 
-modules, where the registered module that maximally satisfies a semver range 
-is the one  returned by the `require` function call.  This also enables us to 
-perform  server-side deduplication of modules prior to serving the bundles, 
-and the client-side lookup will still load the correct modules.  
+1. If the dependency is in the same package, the exact version of the dependency
+   is used.
+2. If the dependency is a local package (i.e., module given by `file://...`),
+   the semver is the patch-level range (`~`) starting from the installed
+   version.
+3. If the dependency is in the dependency list of the module's `package.json`,
+   then the semver range requested there is used.
+4. Otherwise the installed version of the dependency is used exactly. Note that
+   not listing an external dependency in the package metadata is a bad practice
+   that leads to almost no deduping.
+
+By using a semver range, JupyterLab can perform client-side deduplication of
+modules, where the registered module that maximally satisfies a semver range is
+the one returned by the `require` function call.  This also enables us to
+perform server-side deduplication of modules prior to serving the bundles, and
+the client-side lookup will still load the correct modules.
 
 Reasons to deduplicate code include:
 
 - being able to use `instanceof()` on an object to determine if it is the same class (a technique used by phosphor's drag-drop mechanism)
 - sharing of module-private state between different consumers, such as a list of client-side running kernels in `@jupyterlab/services`.
 
-All client-side `require()` calls are synchronous, which means that the 
-bundles containing the `define()` modules must be loaded prior to using
-any of the bundles' functions.  The loader provides an `ensureBundle()` 
-function to load a particular bundle or bundles prior to calling `require()` on
-a module.
+All client-side `require()` calls are synchronous, which means that the bundles
+containing the `define()` modules must be loaded prior to using any of the
+bundles' functions.  The loader provides an `ensureBundle()` function to load a
+particular bundle or bundles prior to calling `require()` on a module.
 
 ### Custom WebPack Configuration and JupyterLabPlugin
-A completely custom WebPack configuration may be needed if there is a case 
-where the `buildExtension` function is not sufficient to build the extension. 
-If a custom WebPack configuration is needed, the `JupyterLabPlugin` must be 
-used as part of the WebPack config to ensure proper handling of module 
-definition and requires.
+A completely custom WebPack configuration may be needed if there is a case where
+the `buildExtension` function is not sufficient to build the extension. If a
+custom WebPack configuration is needed, the `JupyterLabPlugin` must be used as
+part of the WebPack config to ensure proper handling of module definition and
+requires.
 
 
 ## Publishing your extension
