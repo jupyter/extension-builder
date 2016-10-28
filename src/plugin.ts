@@ -417,7 +417,7 @@ namespace Private {
     if (issuerPackage.name === rootPackage.name) {
       semver = `${rootPackage.version}`;
     } else if (semver.indexOf('file:') === 0) {
-      let sourcePath = path.resolve(issuerPath, semver.slice('file:'.length));
+      let sourcePath = path.resolve(rootPath, semver.slice('file:'.length));
       let sourcePackage = getPackage(sourcePath);
       // Allow patch version increments of local packages.
       semver = `~${sourcePackage.version}`;
