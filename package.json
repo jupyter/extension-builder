@@ -9,7 +9,7 @@
   ],
   "scripts": {
     "build": "tsc --project src && tsc --project test/src",
-    "clean": "rimraf docs && rimraf lib",
+    "clean": "rimraf docs && rimraf lib && rimraf test/build",
     "docs": "typedoc --mode modules --module commonjs --excludeNotExported --target es5 --moduleResolution node --out docs/ src",
     "prepublish": "npm run build",
     "test:coverage": "istanbul cover --dir test/coverage _mocha -- test/build/**/**.spec.js",
@@ -32,6 +32,10 @@
   },
   "homepage": "https://github.com/jupyterlab/extension-builder#readme",
   "devDependencies": {
+    "@types/expect.js": "^0.3.29",
+    "@types/mocha": "^2.2.32",
+    "@types/node": "^6.0.46",
+    "@types/semver": "^5.3.30",
     "es6-promise": "^3.3.1",
     "expect.js": "^0.3.1",
     "istanbul": "^0.4.5",
