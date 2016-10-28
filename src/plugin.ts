@@ -72,7 +72,7 @@ class JupyterLabPlugin {
         for (let i = 0; i < mod.dependencies.length; i++) {
           let dep = mod.dependencies[i];
           if (dep.id && dep.id !== mod.id) {
-            deps.push(Private.getRequirePath(dep));
+            deps.push(Private.getRequirePath(mod, dep));
           }
         }
         modules[Private.getDefinePath(mod)] = deps;
@@ -161,7 +161,7 @@ class JupyterLabPlugin {
       for (let i = 0; i < deps.length; i++) {
         let dep = deps[i];
         let target = `__webpack_require__(${dep.id})`;
-        let modPath = Private.getRequirePath(dep);
+        let modPath = Private.getRequirePath(mod, dep);
         let replacer = `__webpack_require__('${modPath}')`;
         source = source.split(target).join(replacer);
       }
@@ -277,18 +277,19 @@ namespace Private {
   /**
    * Get the require path for a WebPack module.
    *
-   * @param module - A parsed WebPack module object.
+   * @param mod - A parsed WebPack module that is requiring a dependency.
+   * @param dep - A parsed WebPack module object representing the dependency.
    *
-   * @returns A semver-mangled define path for the module.
+   * @returns A semver-mangled define path for the dependency.
    *    For example, 'foo@^1.0.0/lib/bar/baz.js'.
    */
   export
-  function getRequirePath(mod: any): string {
-    if (!mod.context) {
+  function getRequirePath(mod: any, dep: any): string {
+    if (!dep.context) {
       return '__ignored__';
     }
-    let issuer = mod.issuer || mod.userRequest;
-    let request = mod.userRequest || mod.context;
+    let issuer = mod.userRequest || mod.context;
+    let request = dep.userRequest || dep.context;
     let requestParts = request.split('!');
     let parts: string[] = [];
 
@@ -321,7 +322,7 @@ namespace Private {
       return a.userRequest < b.userRequest ? -1 : 1;
     }).forEach((dep: any) => {
       if (dep.module) {
-        map[dep.userRequest] = getRequirePath(dep.module);
+        map[dep.userRequest] = getRequirePath(mod, dep.module);
       }
     });
     let mapString = JSON.stringify(map, null, '\t');
