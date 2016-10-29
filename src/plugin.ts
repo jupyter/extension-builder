@@ -71,8 +71,8 @@ class JupyterLabPlugin {
         let deps: string[] = [];
         for (let i = 0; i < mod.dependencies.length; i++) {
           let dep = mod.dependencies[i];
-          if (dep.id && dep.id !== mod.id) {
-            deps.push(Private.getRequirePath(mod, dep));
+          if (dep.module && dep.module.id && dep.module.id !== mod.id) {
+            deps.push(Private.getRequirePath(mod, dep.module));
           }
         }
         modules[Private.getDefinePath(mod)] = deps;
