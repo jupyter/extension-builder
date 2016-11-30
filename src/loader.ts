@@ -2,6 +2,14 @@
 // Distributed under the terms of the Modified BSD License.
 
 import {
+  Application
+} from 'phosphor/lib/ui/application';
+
+import {
+  Widget
+} from 'phosphor/lib/ui/widget';
+
+import {
   maxSatisfying
 } from 'semver';
 
@@ -103,6 +111,40 @@ class ModuleLoader {
   }
 
   /**
+   * Extract the entry point plugins of an extension.
+   *
+   * @param data - The loaded entry point module.
+   *
+   * @returns An array of validated plugins.
+   *
+   * #### Notes
+   * The plugin(s) are extracted and validated before being returned.
+   */
+  extractPlugins(data: any): Application.IPlugin<Application<Widget>, any>[] {
+    // We use the default export from es6 modules.
+    if (data.__esModule) {
+      data = data.default;
+    }
+    if (!Array.isArray(data)) {
+      data = [data];
+    }
+    if (!data.length) {
+      throw new Error(`No plugins found`);
+    }
+    for (let i = 0; i < data.length; i++) {
+      let plugin = data[i];
+      if (!plugin.hasOwnProperty('id')) {
+        throw new Error(`Missing id for plugin ${i}`);
+      }
+      if (typeof(plugin['activate']) !== 'function') {
+        let id: string = plugin.id;
+        throw Error(`Missing activate function in '${id}'`);
+      }
+    }
+    return data;
+  }
+
+  /**
    * Find a module path matching a given module request.
    *
    * @param path - The semver-mangled fully qualified path to the module.
@@ -123,7 +165,7 @@ class ModuleLoader {
       return cache[path];
     }
     let modules = Object.keys(this._registered);
-    let sources = path.split('!').map(path => this._parsePath(path));
+    let sources = path.split('!').map(value => this._parsePath(value));
     if (sources.some(elem => !elem)) {
       // check to see if any element of sources is falsey
       throw Error('Invalid module path ' + path);
@@ -131,7 +173,7 @@ class ModuleLoader {
     let matches: string[] = [];
     let versions: string[][] = [];
     for (let mod of modules) {
-      let targets = mod.split('!').map(path => this._parsePath(path));
+      let targets = mod.split('!').map(value => this._parsePath(value));
       if (targets.some(e => !e)) {
         continue;
       }
@@ -140,7 +182,7 @@ class ModuleLoader {
           && source.module === targets[i].module);
       })) {
         matches.push(mod);
-        versions.push(targets.map(t => t.version))
+        versions.push(targets.map(t => t.version));
       }
     }
 
@@ -151,7 +193,7 @@ class ModuleLoader {
     // If we have a chain of loaders, we want
     // to filter for best versions in reverse order.
     for (let part = versions[0].length - 1; matches.length > 1 && part >= 0; part--) {
-      let best = maxSatisfying(versions.map(v => v[part]), sources[part].version)
+      let best = maxSatisfying(versions.map(v => v[part]), sources[part].version);
       if (!best) {
         throw new Error(`No module found satisfying ${path}`);
       }
