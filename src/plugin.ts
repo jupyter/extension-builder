@@ -174,8 +174,8 @@ class JupyterLabPlugin {
     }
 
     // Handle public requires.
-    let requireP = '__webpack_require__.p';
-    let newRequireP = `'${publicPath}'`;
+    let requireP = '__webpack_require__.p +';
+    let newRequireP = `'${publicPath}' +`;
     source = source.split(requireP).join(newRequireP);
 
     // Replace the require name with the custom one.
