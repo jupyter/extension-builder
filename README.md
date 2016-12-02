@@ -163,8 +163,9 @@ Reasons to deduplicate code include:
 
 All client-side `require()` calls are synchronous, which means that the bundles
 containing the `define()` modules must be loaded prior to using any of the
-bundles' functions.  The loader provides an `ensureBundle()` function to load a
-particular bundle or bundles prior to calling `require()` on a module.
+bundles' functions.  The [loader](http://jupyterlab.github.io/jupyterlab/classes/_application_loader_.moduleloader.html) in JupyterLab provides an `ensureBundle()` 
+function to load a particular bundle or bundles prior to calling `require()` 
+on a module.
 
 ### Custom WebPack Configuration and JupyterLabPlugin
 A completely custom WebPack configuration may be needed if there is a case where
