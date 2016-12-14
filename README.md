@@ -86,8 +86,17 @@ module.exports = [{
 ```
 
 The extension entry point *must* be a CommonJS module where the default
-export is an array of plugin objects.  If writing in ES6 format use the
-`export default [ ... ];` syntax.
+export is an array of plugin objects.  If writing in ES6 format use the default
+export syntax `export default myPlugin` for a single plugin, and the following 
+pattern for multiple exports  (remove the type declaration if not using 
+TypeScript):
+
+```typescript
+import { JupyterLabPlugin } from 'jupyterlab/lib/application';
+// Plugins defined here
+const plugins: JupyterlabPlugin<any>[] = [ ... ];
+export default plugins;
+```
 
 
 ### buildExtension
