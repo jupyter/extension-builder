@@ -27,6 +27,7 @@ DEFAULT_LOADERS = [
   { test: /\.json$/, loader: 'json-loader' },
   { test: /\.html$/, loader: 'file-loader' },
   { test: /\.(jpg|png|gif)$/, loader: 'file-loader' },
+  { test: /\.js.map$/, loader: 'file-loader' },
   { test: /\.woff2(\?v=\d+\.\d+\.\d+)?$/, loader: 'url-loader?limit=10000&mimetype=application/font-woff' },
   { test: /\.woff(\?v=\d+\.\d+\.\d+)?$/, loader: 'url-loader?limit=10000&mimetype=application/font-woff' },
   { test: /\.ttf(\?v=\d+\.\d+\.\d+)?$/, loader: 'url-loader?limit=10000&mimetype=application/octet-stream' },
