@@ -1,0 +1,301 @@
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>@jupyterlab/extension-builder</title>
+	<meta name="description" content="">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="assets/css/main.css">
+</head>
+<body>
+<header>
+	<div class="tsd-page-toolbar">
+		<div class="container">
+			<div class="table-wrap">
+				<div class="table-cell" id="tsd-search" data-index="assets/js/search.js" data-base=".">
+					<div class="field">
+						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+						<input id="tsd-search-field" type="text" />
+					</div>
+					<ul class="results">
+						<li class="state loading">Preparing search index...</li>
+						<li class="state failure">The search index is not available</li>
+					</ul>
+					<a href="index.html" class="title">@jupyterlab/extension-builder</a>
+				</div>
+				<div class="table-cell" id="tsd-widgets">
+					<div id="tsd-filter">
+						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+						<div class="tsd-filter-group">
+							<div class="tsd-select" id="tsd-filter-visibility">
+								<span class="tsd-select-label">All</span>
+								<ul class="tsd-select-list">
+									<li data-value="public">Public</li>
+									<li data-value="protected">Public/Protected</li>
+									<li data-value="private" class="selected">All</li>
+								</ul>
+							</div>
+							<input type="checkbox" id="tsd-filter-inherited" checked />
+							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-externals" checked />
+							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
+						</div>
+					</div>
+					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="tsd-page-title">
+		<div class="container">
+			<ul class="tsd-breadcrumb">
+				<li>
+					<a href="globals.html">Globals</a>
+				</li>
+			</ul>
+			<h1> @jupyterlab/extension-builder</h1>
+		</div>
+	</div>
+</header>
+<div class="container container-main">
+	<div class="row">
+		<div class="col-8 col-content">
+			<div class="tsd-panel tsd-typography">
+				<h1 id="jupyterlab-extension-builder">JupyterLab Extension Builder</h1>
+				<p><strong>Tools for building JupyterLab extensions</strong></p>
+				<p>A JupyterLab extension provides additional, optional functionality to
+					JupyterLab&#39;s built-in capabilities. An extension is a module that provides
+					one or more plugins to the JupyterLab application. To streamline third-party
+					development of extensions, this library provides a build script for generating
+				third party extension JavaScript bundles.  </p>
+				<p>Simple extensions can be created by using the <code>buildExtension</code> function
+					with the default options.  More advanced extensions may require additional
+				configuration such as custom loaders or WebPack plugins.</p>
+				<p>A video tutorial walkthrough for building JupyterLab extensions can be found on <a href="https://youtu.be/WVDCMIQ3KOk">YouTube</a>.</p>
+				<h2 id="package-install">Package Install</h2>
+				<p><strong>Prerequisites</strong></p>
+				<ul>
+					<li><a href="http://nodejs.org/">node</a></li>
+				</ul>
+				<pre><code class="lang-bash">npm install --save @jupyterlab/extension-builder
+</code></pre>
+				<h2 id="source-build">Source Build</h2>
+				<p><strong>Prerequisites</strong></p>
+				<ul>
+					<li><a href="http://git-scm.com/">git</a></li>
+					<li><a href="http://nodejs.org/">node 4+</a></li>
+				</ul>
+				<pre><code class="lang-bash">git <span class="hljs-built_in">clone</span> https://github.com/jupyterlab/extension-builder.git
+<span class="hljs-built_in">cd</span> extension-builder
+npm install
+npm run build
+</code></pre>
+				<h3 id="rebuild-source">Rebuild Source</h3>
+				<pre><code class="lang-bash">npm run clean
+npm run build
+</code></pre>
+				<h3 id="debugging">Debugging</h3>
+				<pre><code>npm <span class="hljs-keyword">install</span> -g devtool
+</code></pre><p>Insert a <code>debugger;</code> statement in the source where you want the execution to
+				stop in the debugger. Then execute an extension build with</p>
+				<pre><code>devtool <span class="hljs-tag">&lt;<span class="hljs-name">my_build_script.js</span>&gt;</span>
+</code></pre><p>or if running WebPack directly,</p>
+				<pre><code>devtool <span class="hljs-tag">&lt;<span class="hljs-name">path_to_webpack_in_node_modules</span>/<span class="hljs-attr">bin</span>&gt;</span>
+</code></pre><h2 id="usage">Usage</h2>
+				<p>Three major usage steps include:</p>
+				<ul>
+					<li>creating the <a href="#extension-entry-point">extension entry point</a></li>
+					<li>build using the <a href="#buildExtension">buildExtension</a> script</li>
+					<li>register the extension using <a href="#jupyter-labextension"><code>jupyter labextension</code></a></li>
+				</ul>
+				<p>The full API docs can be found <a href="http://jupyterlab.github.io/jupyterlab/">here</a>.</p>
+				<h3 id="extension-entry-point">Extension entry point</h3>
+				<p>A simple extension entry point that exposes a single application <a href="http://jupyterlab-tutorial.readthedocs.io/en/latest/plugins.html">plugin</a> could
+				look like: </p>
+				<pre><code class="lang-javascript"><span class="hljs-built_in">module</span>.exports = [{
+    <span class="hljs-attr">id</span>: <span class="hljs-string">'my-cool-extension'</span>,
+    <span class="hljs-attr">activate</span>: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">app</span>) </span>{
+       <span class="hljs-built_in">console</span>.log(app.commands);
+    }
+}];
+</code></pre>
+				<p>The extension entry point <em>must</em> be a CommonJS module where the default
+					export is an array of plugin objects.  If writing in ES6 format use the default
+					export syntax <code>export default myPlugin</code> for a single plugin, and the following
+					pattern for multiple exports  (remove the type declaration if not using
+				TypeScript):</p>
+				<pre><code class="lang-typescript"><span class="hljs-keyword">import</span> { JupyterLabPlugin } from <span class="hljs-string">'jupyterlab/lib/application'</span>;
+<span class="hljs-comment">// Plugins defined here</span>
+<span class="hljs-keyword">const</span> plugins: JupyterlabPlugin&lt;<span class="hljs-built_in">any</span>&gt;[] = [ ... ];
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> plugins;
+</code></pre>
+				<h3 id="buildextension">buildExtension</h3>
+				<p>Build the above example using the following script:</p>
+				<pre><code class="lang-javascript"><span class="hljs-keyword">var</span> buildExtension = <span class="hljs-built_in">require</span>(<span class="hljs-string">'@jupyterlab/extension-builder'</span>).buildExtension;
+
+buildExtension({
+    <span class="hljs-attr">name</span>: <span class="hljs-string">'my-cool-extension'</span>,
+    <span class="hljs-attr">entry</span>: <span class="hljs-string">'./index.js'</span>,
+    <span class="hljs-attr">outputDir</span>: <span class="hljs-string">'./build'</span>
+});
+</code></pre>
+				<p>The <code>name</code> is a string that will be used for the output filename. The <code>entry</code> is the module that exports a plugin definition or array of plugin definitions. The <code>outputDir</code> is the directory in which the generated plugin bundle, manifest, and related files will be stored.</p>
+				<p>Several optional arguments are also available; see the options at the bottom of the <a href="https://github.com/jupyter/jupyterlab-extension-builder/blob/master/src/builder.ts">builder.ts</a> file.</p>
+				<p>In this case the builder script will create the following files in the build
+				directory:</p>
+				<pre><code>my-cool-extension<span class="hljs-selector-class">.bundle</span><span class="hljs-selector-class">.js</span>
+my-cool-extension<span class="hljs-selector-class">.js</span><span class="hljs-selector-class">.manifest</span>
+</code></pre><h3 id="jupyter-labextension">jupyter labextension</h3>
+				<p>Other extensions may produce additional files in the build directory depending
+					on the complexity of extension.  The two files above, <code>my-cool-extension.js</code> and
+					<code>my-cool-extension.js.manifest</code>, are used by the JupyterLab server to determine
+					the entry point file(s) and entry point module(s) for the extension.  The
+					extension must also be registered, using the command <code>jupyter labextension</code>, in
+					order to be added to the JupyterLab application.  See the documentation for
+				<a href="http://jupyterlab-tutorial.readthedocs.io/en/latest/labextensions.html">labextension</a></p>
+				<h2 id="technical-overview">Technical overview</h2>
+				<p>The extension bundles are created using WebPack, and the modules produced by
+					WebPack are modified to use JupyterLab&#39;s custom module registration and loading
+				mechanism.</p>
+				<p>JupyterLab&#39;s custom module registration and loading mechanism uses a <code>define</code>
+					function that registers modules by name, where the name contains the package
+					name, version number, and the full path to the module.  For example,
+					<code>&#39;phosphor@0.6.1/lib/ui/widget.js&#39;</code>.  Within a <code>define</code> function, a required
+					module is referenced by package name, semver range, and the full path to the
+					module.  For example, <code>require(&#39;phosphor@^0.6.0/lib/ui/tabpanel.js&#39;)</code>. The
+					semver range is determined by the following criteria (see the
+				<code>getModuleSemverPath</code> function in <code>plugin.ts</code>:</p>
+				<ol>
+					<li>If the dependency is in the same package, the exact version of the dependency
+					is used.</li>
+					<li>If the dependency is a local package (i.e., module given by <code>file://...</code>),
+						the semver is the patch-level range (<code>~</code>) starting from the installed
+					version.</li>
+					<li>If the dependency is in the dependency list of the module&#39;s <code>package.json</code>,
+					then the semver range requested there is used.</li>
+					<li>Otherwise the installed version of the dependency is used exactly. Note that
+						not listing an external dependency in the package metadata is a bad practice
+					that leads to almost no deduping.</li>
+				</ol>
+				<p>By using a semver range, JupyterLab can perform client-side deduplication of
+					modules, where the registered module that maximally satisfies a semver range is
+					the one returned by the <code>require</code> function call.  This also enables us to
+					perform server-side deduplication of modules prior to serving the bundles, and
+				the client-side lookup will still load the correct modules.</p>
+				<p>Reasons to deduplicate code include:</p>
+				<ul>
+					<li>being able to use <code>instanceof()</code> on an object to determine if it is the same class (a technique used by phosphor&#39;s drag-drop mechanism)</li>
+					<li>sharing of module-private state between different consumers, such as a list of client-side running kernels in <code>@jupyterlab/services</code>.</li>
+				</ul>
+				<p>All client-side <code>require()</code> calls are synchronous, which means that the bundles
+					containing the <code>define()</code> modules must be loaded prior to using any of the
+					bundles&#39; functions.  The <a href="http://jupyterlab.github.io/jupyterlab/classes/_application_loader_.moduleloader.html">loader</a> in JupyterLab provides an <code>ensureBundle()</code>
+					function to load a particular bundle or bundles prior to calling <code>require()</code>
+				on a module.</p>
+				<h3 id="custom-webpack-configuration-and-jupyterlabplugin">Custom WebPack Configuration and JupyterLabPlugin</h3>
+				<p>A completely custom WebPack configuration may be needed if there is a case where
+					the <code>buildExtension</code> function is not sufficient to build the extension. If a
+					custom WebPack configuration is needed, the <code>JupyterLabPlugin</code> must be used as
+					part of the WebPack config to ensure proper handling of module definition and
+				requires.</p>
+				<h2 id="publishing-your-extension">Publishing your extension</h2>
+				<p>Before you publish your extension to <code>npm</code>, add the following <code>keywords</code> attribute to your extension&#39;s <code>package.json</code>:</p>
+				<pre><code>{
+    <span class="hljs-string">"keywords"</span>: [<span class="hljs-string">"jupyterlab"</span>, <span class="hljs-string">"jupyterlab extension"</span>],
+    ...
+}
+</code></pre><p>Adding these keywords will allow other users to discover your extension with <code>npm search</code>.</p>
+			</div>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class="globals  ">
+						<a href="globals.html"><em>Globals</em></a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_builder_.html">"builder"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_index_.html">"index"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_plugin_.html">"plugin"</a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<footer class="with-border-bottom">
+	<div class="container">
+		<h2>Legend</h2>
+		<div class="tsd-legend-group">
+			<ul class="tsd-legend">
+				<li class="tsd-kind-module"><span class="tsd-kind-icon">Module</span></li>
+				<li class="tsd-kind-object-literal"><span class="tsd-kind-icon">Object literal</span></li>
+				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
+				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
+				<li class="tsd-kind-function tsd-has-type-parameter"><span class="tsd-kind-icon">Function with type parameter</span></li>
+				<li class="tsd-kind-index-signature"><span class="tsd-kind-icon">Index signature</span></li>
+				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-enum"><span class="tsd-kind-icon">Enumeration</span></li>
+				<li class="tsd-kind-enum-member"><span class="tsd-kind-icon">Enumeration member</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-enum"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-enum"><span class="tsd-kind-icon">Method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-interface"><span class="tsd-kind-icon">Interface</span></li>
+				<li class="tsd-kind-interface tsd-has-type-parameter"><span class="tsd-kind-icon">Interface with type parameter</span></li>
+				<li class="tsd-kind-constructor tsd-parent-kind-interface"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-interface"><span class="tsd-kind-icon">Method</span></li>
+				<li class="tsd-kind-index-signature tsd-parent-kind-interface"><span class="tsd-kind-icon">Index signature</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-class"><span class="tsd-kind-icon">Class</span></li>
+				<li class="tsd-kind-class tsd-has-type-parameter"><span class="tsd-kind-icon">Class with type parameter</span></li>
+				<li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class"><span class="tsd-kind-icon">Accessor</span></li>
+				<li class="tsd-kind-index-signature tsd-parent-kind-class"><span class="tsd-kind-icon">Index signature</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static property</span></li>
+				<li class="tsd-kind-call-signature tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static method</span></li>
+			</ul>
+		</div>
+	</div>
+</footer>
+<div class="container tsd-generator">
+	<p>Generated using <a href="http://typedoc.org/" target="_blank">TypeDoc</a></p>
+</div>
+<div class="overlay"></div>
+<script src="assets/js/main.js"></script>
+<script>if (location.protocol == 'file:') document.write('<script src="assets/js/search.js"><' + '/script>');</script>
+</body>
+</html>
