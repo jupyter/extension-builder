@@ -9,7 +9,7 @@ sh -e /etc/init.d/xvfb start || true
 
 npm run clean
 npm run build
-npm run docs
+#npm run docs
 
 npm test
 npm run test:coverage
