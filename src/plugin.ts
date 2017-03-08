@@ -95,8 +95,8 @@ class JupyterLabPlugin {
 
       // Create a manifest for the chunk.
       let manifest: any = {};
-      if (chunk.entry) {
-        manifest['entry'] = Private.getDefinePath(chunk.modules[0]);
+      if (chunk.entryModule) {
+        manifest['entry'] = Private.getDefinePath(chunk.entryModule);
       }
       manifest['hash'] = chunk.hash;
       manifest['id'] = chunk.id;
@@ -157,7 +157,7 @@ class JupyterLabPlugin {
       );
 
       // Replace the require statements with the semver-mangled name.
-      let deps = mod.getAllModuleDependencies();
+      let deps = Private.getAllModuleDependencies(mod);
       for (let i = 0; i < deps.length; i++) {
         let dep = deps[i];
         let target = `__webpack_require__(${dep.id})`;
@@ -180,6 +180,9 @@ class JupyterLabPlugin {
 
     // Replace the require name with the custom one.
     source = source.split('__webpack_require__').join(requireName);
+
+    // Handle ES6 exports
+    source = source.split('__webpack_exports__').join('exports');
 
     // Create our header and footer with a version-mangled defined name.
     let definePath = Private.getDefinePath(mod);
@@ -330,6 +333,34 @@ namespace Private {
   }
 
   /**
+   * Get all of the module dependencies for a module.
+   */
+  export
+  function getAllModuleDependencies(mod: any): any[] {
+    // Extracted from https://github.com/webpack/webpack/blob/ee1b8c43b474b22a20bfc25daf0ee153dfb2ef9f/lib/NormalModule.js#L227
+    let list: any[] = [];
+
+    function doDep(dep: any) {
+      if (dep.module && list.indexOf(dep.module) < 0) {
+        list.push(dep.module);
+      }
+    }
+
+    function doVariable(variable: any) {
+      variable.dependencies.forEach(doDep);
+    }
+
+    function doBlock(block: any) {
+      block.variables.forEach(doVariable);
+      block.dependencies.forEach(doDep);
+      block.blocks.forEach(doBlock);
+    }
+
+    doBlock(mod);
+    return list;
+  }
+
+  /**
    * Find a package root path from a request.
    *
    * @param request - The request path.
@@ -408,7 +439,6 @@ namespace Private {
   function getModuleSemverPath(request: string, issuer: string): string {
     let rootPath = findRoot(request);
     let rootPackage = getPackage(rootPath);
-    let issuerPath = findRoot(issuer);
     let issuerPackage = getPackage(issuer);
     let modPath = request.slice(rootPath.length + 1);
     let name = rootPackage.name;
@@ -421,6 +451,9 @@ namespace Private {
       let sourcePackage = getPackage(sourcePath);
       // Allow patch version increments of local packages.
       semver = `~${sourcePackage.version}`;
+    }
+    if (name === 'punycode') {
+      semver = '*';
     }
     let id = `${name}@${semver}`;
     if (modPath) {

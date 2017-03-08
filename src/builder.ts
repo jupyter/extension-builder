@@ -24,15 +24,15 @@ import {
  */
 const
 DEFAULT_LOADERS = [
-  { test: /\.json$/, loader: 'json-loader' },
-  { test: /\.html$/, loader: 'file-loader' },
-  { test: /\.(jpg|png|gif)$/, loader: 'file-loader' },
-  { test: /\.js.map$/, loader: 'file-loader' },
-  { test: /\.woff2(\?v=\d+\.\d+\.\d+)?$/, loader: 'url-loader?limit=10000&mimetype=application/font-woff' },
-  { test: /\.woff(\?v=\d+\.\d+\.\d+)?$/, loader: 'url-loader?limit=10000&mimetype=application/font-woff' },
-  { test: /\.ttf(\?v=\d+\.\d+\.\d+)?$/, loader: 'url-loader?limit=10000&mimetype=application/octet-stream' },
-  { test: /\.eot(\?v=\d+\.\d+\.\d+)?$/, loader: 'file-loader' },
-  { test: /\.svg(\?v=\d+\.\d+\.\d+)?$/, loader: 'url-loader?limit=10000&mimetype=image/svg+xml' }
+  { test: /\.json$/, use: 'json-loader' },
+  { test: /\.html$/, use: 'file-loader' },
+  { test: /\.(jpg|png|gif)$/, use: 'file-loader' },
+  { test: /\.js.map$/, use: 'file-loader' },
+  { test: /\.woff2(\?v=\d+\.\d+\.\d+)?$/, use: 'url-loader?limit=10000&mimetype=application/font-woff' },
+  { test: /\.woff(\?v=\d+\.\d+\.\d+)?$/, use: 'url-loader?limit=10000&mimetype=application/font-woff' },
+  { test: /\.ttf(\?v=\d+\.\d+\.\d+)?$/, use: 'url-loader?limit=10000&mimetype=application/octet-stream' },
+  { test: /\.eot(\?v=\d+\.\d+\.\d+)?$/, use: 'file-loader' },
+  { test: /\.svg(\?v=\d+\.\d+\.\d+)?$/, use: 'url-loader?limit=10000&mimetype=image/svg+xml' }
 ];
 
 
@@ -70,7 +70,6 @@ function buildExtension(options: IBuildOptions) {
     node: {
       fs: 'empty'
     },
-    debug: true,
     bail: true,
     plugins: [new JupyterLabPlugin()]
   // Add the override options.
@@ -81,12 +80,20 @@ function buildExtension(options: IBuildOptions) {
     // Note that we have to use an explicit local public path
     // otherwise the urls in the extracted CSS will point to the wrong
     // location.
-    // See https://github.com/webpack/extract-text-webpack-plugin/issues/27#issuecomment-77531770
-    let loader = ExtractTextPlugin.extract('style-loader', 'css-loader',
-      { publicPath: './' });
+    // See https://github.com/webpack-contrib/extract-text-webpack-plugin/tree/75cb09eed13d15cec8f974b1210920a7f249f8e2
+    let cssLoader = ExtractTextPlugin.extract({
+      use: 'css-loader',
+      fallback: 'style-loader',
+      publicPath: './'
+    });
     config.merge({
       module: {
-        loaders: [{ test: /\.css$/, loader: loader }]
+        rules: [
+          {
+            test: /\.css$/,
+            use: cssLoader
+          }
+        ]
       },
       plugins: [new ExtractTextPlugin('[name].css')]
     });
@@ -96,14 +103,14 @@ function buildExtension(options: IBuildOptions) {
   if (options.useDefaultLoaders !== false) {
     config.merge({
       module: {
-        loaders: DEFAULT_LOADERS
+        rules: DEFAULT_LOADERS
       }
     });
   }
 
   // Set up and run the WebPack compilation.
   let compiler = webpack(config);
-  compiler.context = name;
+  compiler.name = name;
   compiler.run((err, stats) => {
     if (err) {
       console.error(err.stack || err);
