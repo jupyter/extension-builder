@@ -32,15 +32,16 @@
   },
   "homepage": "https://github.com/jupyterlab/extension-builder#readme",
   "devDependencies": {
-    "@types/expect.js": "^0.3.29",
+    "@types/chai": "^3.4.35",
     "@types/extract-text-webpack-plugin": "^2.0.1",
     "@types/lodash": "^4.14.52",
     "@types/mocha": "^2.2.32",
     "@types/node": "^6.0.46",
     "@types/semver": "^5.3.30",
-    "expect.js": "^0.3.1",
+    "chai": "^3.5.0",
     "istanbul": "^0.4.5",
     "mocha": "^2.3.4",
+    "moment": "^2.17.1",
     "rimraf": "^2.5.4",
     "typedoc": "^0.5.0",
     "typescript": "^2.2.1"
