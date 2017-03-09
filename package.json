@@ -12,6 +12,7 @@
     "clean": "rimraf docs && rimraf lib && rimraf test/build",
     "docs": "typedoc --mode modules --module commonjs --excludeNotExported --target es5 --moduleResolution node --out docs/ src",
     "prepublish": "npm run build",
+    "test:coverage": "istanbul cover --dir test/coverage _mocha -- test/build/**/**.spec.js",
     "test:debug": "mocha test/build/**/**.spec.js --debug-brk",
     "test": "mocha test/build/**/**.spec.js"
   },
@@ -38,6 +39,7 @@
     "@types/node": "^6.0.46",
     "@types/semver": "^5.3.30",
     "expect.js": "^0.3.1",
+    "istanbul": "^0.4.5",
     "mocha": "^2.3.4",
     "rimraf": "^2.5.4",
     "typedoc": "^0.5.0",
