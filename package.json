@@ -14,7 +14,7 @@
     "prepublish": "npm run build",
     "test:coverage": "istanbul cover --dir test/coverage _mocha -- test/build/**/**.spec.js",
     "test:debug": "mocha test/build/**/**.spec.js --debug-brk",
-    "test": "cd test && mocha build/**/**.spec.js && node test-builder.js"
+    "test": "cd test && mocha build/**/**.spec.js"
   },
   "repository": {
     "type": "git",

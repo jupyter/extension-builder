@@ -7,11 +7,22 @@ import {
   buildExtension
 } from '../../lib';
 
+let fs = (require as any)('fs');
+
 
 describe('builder', () => {
 
-  it('should pass', () => {
-
+  it('should build the assets', () => {
+    return buildExtension({
+        name: 'test',
+        entry: './test.js',
+        outputDir: 'build'
+    }).then(function() {
+        let path = './build/test.bundle.js.manifest';
+        let manifest = JSON.parse(fs.readFileSync(path, 'utf8'));
+        expect(manifest.name).to.be('test');
+        expect(manifest.files).to.eql(['test.bundle.js']);
+    });
   });
 
 });
