@@ -12,7 +12,7 @@
     "clean": "rimraf docs && rimraf lib && rimraf test/build",
     "docs": "typedoc --mode modules --module commonjs --excludeNotExported --target es5 --moduleResolution node --out docs/ src",
     "prepublish": "npm run build",
-    "test:coverage": "istanbul cover --dir coverage _mocha -- test/build/**/**.spec.js",
+    "test:coverage": "istanbul cover --dir test/coverage _mocha -- test/build/**/**.spec.js",
     "test:debug": "mocha test/build/**/**.spec.js --debug-brk",
     "test": "mocha test/build/**/**.spec.js"
   },
