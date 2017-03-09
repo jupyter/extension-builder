@@ -42,7 +42,7 @@ DEFAULT_LOADERS = [
  * @param options - The options used to build the extension.
  */
 export
-function buildExtension(options: IBuildOptions) {
+function buildExtension(options: IBuildOptions): Promise<void> {
   let name = options.name;
 
   if (!name) {
@@ -111,21 +111,26 @@ function buildExtension(options: IBuildOptions) {
   // Set up and run the WebPack compilation.
   let compiler = webpack(config);
   compiler.name = name;
-  compiler.run((err, stats) => {
-    if (err) {
-      console.error(err.stack || err);
-      if ((err as any).details) {
-        console.error((err as any).details);
+
+  return new Promise<void>((resolve, reject) => {
+    compiler.run((err, stats) => {
+      if (err) {
+        console.error(err.stack || err);
+        if ((err as any).details) {
+          console.error((err as any).details);
+        }
+        reject(err);
+      } else {
+        console.log(`\n\nSuccessfully built "${name}":\n`);
+        process.stdout.write(stats.toString({
+          chunks: true,
+          modules: false,
+          chunkModules: false,
+          colors: require('supports-color')
+        }) + '\n');
+        resolve();
       }
-    } else {
-      console.log(`\n\nSuccessfully built "${name}":\n`);
-      process.stdout.write(stats.toString({
-        chunks: true,
-        modules: false,
-        chunkModules: false,
-        colors: require('supports-color')
-      }) + '\n');
-    }
+    });
   });
 }
 
