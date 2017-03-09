@@ -15,7 +15,7 @@ describe('builder', () => {
   it('should build the assets', () => {
     return buildExtension({
         name: 'test',
-        entry: './build/test.js',
+        entry: './test/build/test.js',
         outputDir: 'build'
     }).then(function() {
         let path = './build/test.bundle.js.manifest';
