@@ -224,7 +224,7 @@ ${pluginName}.define('${definePath}', function (module, exports, ${requireName})
           fileName = chunk.files[0];
         }
       });
-      let replacement = `__webpack_require__.ensure('${publicPath}${fileName}'`;
+      let replacement = `__webpack_require__.e('${publicPath}${fileName}'`;
       source = source.replace(regex, replacement);
     }
     return source;
