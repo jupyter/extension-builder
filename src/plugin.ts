@@ -452,11 +452,7 @@ namespace Private {
       // Allow patch version increments of local packages.
       semver = `~${sourcePackage.version}`;
     }
-    // Punycode is improperly handled by Webpack - url requires 1.3,
-    // but webpack fulfills it with 1.4.
-    if (name === 'punycode') {
-      semver = '*';
-    }
+
     let id = `${name}@${semver}`;
     if (modPath) {
       modPath = modPath.split(path.sep).join('/');
